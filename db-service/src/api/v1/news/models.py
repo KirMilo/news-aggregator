@@ -33,3 +33,11 @@ class Source(models.Model):
 
     def __str__(self):
         return self.link
+
+
+class Comment(models.Model):  # Комментарии к новости
+    body = models.TextField(max_length=255)
+    active = models.BooleanField(default=True)
+
+    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    news = models.ForeignKey("News", on_delete=models.CASCADE)

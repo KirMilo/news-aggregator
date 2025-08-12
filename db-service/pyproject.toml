@@ -1,12 +1,17 @@
 [project]
 name = "db-service"
 version = "0.1.0"
-description = "Add your description here"
+description = "Это микросервис, который имплементирует бизнес-логику взаимодействия с СУБД агрегатора новостей."
 readme = "README.md"
 requires-python = ">=3.13,<4.0"
 dependencies = [
     "django>=5.2.5",
+    "django-elasticsearch-dsl>=9.0",
     "djangorestframework>=3.16.1",
+    "elasticsearch>=9.1.0",
+    "elasticsearch-dsl>=0.0.9",
+    "psycopg[binary]>=3.2.9",
+    "redis>=6.4.0",
     "ruff>=0.12.8",
 ]
 
