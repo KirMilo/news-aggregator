@@ -10,23 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+# load environment variables from .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%93w5tifj%k9)x&yt50b443=#nh0pg6w+t&-a@*sw9i*+pmk#3'
+
+SECRET_KEY = os.environ['APP_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -38,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api'
+    'django_elasticsearch_dsl',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -70,17 +75,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'db_service.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.environ['POSTGRES_HOST'],
+        'PORT': os.environ['POSTGRES_PORT'],
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
     }
 }
 
+# Elasticsearch
+# https://django.fun/articles/tutorials/django-rest-framework-i-elasticsearch/
+# https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html#install-and-configure
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': f"{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}",
+        'http_auth': (os.environ['ELASTIC_USER'], os.environ['ELASTIC_PASSWORD']),
+    }
+}
+
+# Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/{os.environ['REDIS_DB']}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -100,18 +128,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -123,10 +149,21 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# https://django.fun/articles/tutorials/django-rest-framework-i-elasticsearch/
-ELASTICSEARCH_URL = {
-    'default': {
-        'hosts': "localhost:9200"
-    }
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": (  # Определяем по умолчанию классы рендеринга
+        "rest_framework.renderers.JSONRenderer",  # Обмен в JSON формате
+        "rest_framework.renderers.BrowsableAPIRenderer",  # Включаем API в браузере. То есть красивый интерфейс.
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (  # Права доступа
+        "rest_framework.permissions.AllowAny",  # Для всех (По умолчанию)
+        # "rest_framework.permissions.IsAuthenticated",  # Только авторизованные пользователи
+    ),  # Имеет самый низкий приоритет
+    "DEFAULT_AUTHENTICATION_CLASSES": (  # Способы аутентификация
+        # "rest_framework.authentication.TokenAuthentication",  # Разрешаем аутентификацию по токену
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Разрешаем аутентификацию по JWT
+        "rest_framework.authentication.SessionAuthentication",  # Разрешаем аутентификацию по сессии
+        "rest_framework.authentication.BasicAuthentication",  # Тоже сессии (Эти две строчки по умолчанию)
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",  # Пагинация Для всего проекта
+    "PAGE_SIZE": 2,  # Размер страницы при пагинации
 }
