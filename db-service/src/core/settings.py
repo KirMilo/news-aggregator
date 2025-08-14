@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_elasticsearch_dsl',
+    'django_elasticsearch_dls_drf',
     'api',
 ]
 
@@ -95,7 +96,6 @@ DATABASES = {
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': f"{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}",
-        'http_auth': (os.environ['ELASTIC_USER'], os.environ['ELASTIC_PASSWORD']),
     }
 }
 
