@@ -32,13 +32,15 @@ services:
         container_name: elasticsearch
         environment:
             - node.name=es01
-            - cluster.name=Elastic-Cluster
+            - cluster.name=elastic-cluster
             - discovery.type=single-node
             - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
             - bootstrap.memory_lock=true
+            - xpack.security.http.ssl.enabled=false
+            - xpack.security.transport.ssl.enabled=false
         mem_limit: 1g
         ulimits:
-            memlock:
+            memlock:  # Активация bootstrap.memory_lock
                 soft: -1
                 hard: -1
         volumes:
