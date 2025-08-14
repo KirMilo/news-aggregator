@@ -96,6 +96,9 @@ DATABASES = {
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': f"{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}",
+        'http_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
+        'use_ssl': False,
+        'verify_certs': False,
     }
 }
 
