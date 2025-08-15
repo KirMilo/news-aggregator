@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_elasticsearch_dsl',
-    'django_elasticsearch_dls_drf',
-    'api',
+    'django_elasticsearch_dsl_drf',
+    'users',
+    'news',
+    'news.comments',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'src.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -95,7 +97,7 @@ DATABASES = {
 # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html#install-and-configure
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': f"{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}",
+        'hosts': f'{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}',
         'http_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
         'use_ssl': False,
         'verify_certs': False,
@@ -153,20 +155,22 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": (  # Определяем по умолчанию классы рендеринга
-        "rest_framework.renderers.JSONRenderer",  # Обмен в JSON формате
-        "rest_framework.renderers.BrowsableAPIRenderer",  # Включаем API в браузере. То есть красивый интерфейс.
+    'DEFAULT_RENDERER_CLASSES': (  # Определяем по умолчанию классы рендеринга
+        'rest_framework.renderers.JSONRenderer',  # Обмен в JSON формате
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Включаем API в браузере. То есть красивый интерфейс.
     ),
-    "DEFAULT_PERMISSION_CLASSES": (  # Права доступа
-        "rest_framework.permissions.AllowAny",  # Для всех (По умолчанию)
-        # "rest_framework.permissions.IsAuthenticated",  # Только авторизованные пользователи
+    'DEFAULT_PERMISSION_CLASSES': (  # Права доступа
+        'rest_framework.permissions.AllowAny',  # Для всех (По умолчанию)
+        # 'rest_framework.permissions.IsAuthenticated',  # Только авторизованные пользователи
     ),  # Имеет самый низкий приоритет
-    "DEFAULT_AUTHENTICATION_CLASSES": (  # Способы аутентификация
-        # "rest_framework.authentication.TokenAuthentication",  # Разрешаем аутентификацию по токену
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Разрешаем аутентификацию по JWT
-        "rest_framework.authentication.SessionAuthentication",  # Разрешаем аутентификацию по сессии
-        "rest_framework.authentication.BasicAuthentication",  # Тоже сессии (Эти две строчки по умолчанию)
+    'DEFAULT_AUTHENTICATION_CLASSES': (  # Способы аутентификация
+        # 'rest_framework.authentication.TokenAuthentication',  # Разрешаем аутентификацию по токену
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Разрешаем аутентификацию по JWT
+        'rest_framework.authentication.SessionAuthentication',  # Разрешаем аутентификацию по сессии
+        'rest_framework.authentication.BasicAuthentication',  # Тоже сессии (Эти две строчки по умолчанию)
     ),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",  # Пагинация Для всего проекта
-    "PAGE_SIZE": 2,  # Размер страницы при пагинации
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # Пагинация Для всего проекта
+    'PAGE_SIZE': 2,  # Размер страницы при пагинации
 }
+
+AUTH_USER_MODEL = 'users.User'

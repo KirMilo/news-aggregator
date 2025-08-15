@@ -1,13 +1,19 @@
+
 from django.db import models
 
 
 class News(models.Model):  # Новости
     title = models.CharField(max_length=255)
     body = models.TextField()
-    time_create = models.DateTimeField(auto_now_add=True)
+    published_at = models.DateTimeField(auto_now_add=True)
+    link = models.URLField()
+    active = models.BooleanField(default=True)
 
     categories = models.ManyToManyField("NewsCategory", related_name='news_categories')
     source = models.ForeignKey("Source", on_delete=models.SET_NULL, related_name='news_sources', null=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Category(models.Model):  # Категории
@@ -33,11 +39,3 @@ class Source(models.Model):
 
     def __str__(self):
         return self.link
-
-
-class Comment(models.Model):  # Комментарии к новости
-    body = models.TextField(max_length=255)
-    active = models.BooleanField(default=True)
-
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-    news = models.ForeignKey("News", on_delete=models.CASCADE)
