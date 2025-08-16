@@ -18,4 +18,14 @@ class CommentModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ("body",)
+        fields = ("body", "published_at", "user", )
+
+
+class CommentCreateModelSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
+
+    class Meta:
+        model = Comment
+        fields = ("news_id", "body", "user",)  # TODO: Прочекать работу

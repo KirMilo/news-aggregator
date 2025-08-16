@@ -1,13 +1,7 @@
 from rest_framework import serializers
 
-from .models import News, Category, NewsImages, Source
+from .models import News, Category, NewsImage, Source
 from .documents import NewsDocument
-
-
-class NewsModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = News
-        fields = "__all__"
 
 
 class NewsDocumentSerializer(serializers.Serializer):
@@ -24,8 +18,8 @@ class CategoryModelSerializer(serializers.ModelSerializer):
 
 class NewsImagesModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NewsImages
-        fields = "__all__"
+        model = NewsImage
+        fields = ("url",)
 
 
 class CreateNewsModelSerializer(serializers.ModelSerializer):
@@ -42,3 +36,12 @@ class CreateNewsSerializer(serializers.Serializer):
     source = serializers.IntegerField()
     categories = serializers.ListField(child=serializers.IntegerField())
     data = serializers.ListField(child=CreateNewsModelSerializer())
+
+
+class NewsModelSerializer(serializers.ModelSerializer):
+    categories = serializers.ListField(child=serializers.IntegerField())
+    news_image = NewsImagesModelSerializer()
+
+    class Meta:
+        model = News
+        fields = ("title", "body", "published_at", "news_image", "categories",)

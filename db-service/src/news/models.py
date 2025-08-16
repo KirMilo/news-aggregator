@@ -28,9 +28,9 @@ class NewsCategory(models.Model):  # Ассоциативная таблица �
     category = models.ForeignKey("Category", on_delete=models.SET_NULL, related_name='news_category_id', null=True)
 
 
-class NewsImages(models.Model):  # Прикрепленные к новости изображения
+class NewsImage(models.Model):  # Прикрепленные к новости изображения
     url = models.URLField()
-    news = models.ForeignKey(News, on_delete=models.SET_NULL, related_name='news_images', null=True)
+    news = models.OneToOneField(News, on_delete=models.CASCADE, related_name='news_image')
 
 
 class Source(models.Model):
