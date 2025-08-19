@@ -21,11 +21,23 @@ class CommentModelSerializer(serializers.ModelSerializer):
         fields = ("body", "published_at", "user", )
 
 
+class CurrentNewsPk:
+    requires_context = True
+
+    def __call__(self, serializer_field):
+        return serializer_field.context["request"].parser_context["kwargs"]["news"]
+
+
 class CommentCreateModelSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault(),
-    )
+    # user = serializers.HiddenField(
+    #     default=serializers.CurrentUserDefault(),
+    # )
+    news_id = serializers.HiddenField(default=CurrentNewsPk())
 
     class Meta:
         model = Comment
-        fields = ("news_id", "body", "user",)  # TODO: Прочекать работу
+        fields = (
+            "news_id",
+            "body",
+            # "user",
+        )  # TODO: Прочекать работу

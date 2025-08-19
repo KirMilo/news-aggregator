@@ -1,0 +1,12 @@
+from django.urls import path, include
+
+from .comments.urls import urlpatterns as comments_patterns
+from news import views as news_views
+
+urlpatterns = (
+    path('<int:news>/comments/', include(comments_patterns)),
+    path('create/', news_views.CreateNewsAPIView.as_view()),
+    path('', news_views.FreshNewsAPIView.as_view()),
+    path('<int:pk>/', news_views.NewsByPKAPIView.as_view()),
+    path('search/', news_views.NewsSearchDocumentAPIView.as_view({'get': 'list'})),
+)

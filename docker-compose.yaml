@@ -24,11 +24,13 @@ services:
             - ./postgres/postgres-data:/var/lib/postgresql/data
         networks:
             - backend-network
+        ports:
+            - "6432:5432"
 
     #redis:
 
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:latest
+        image: elasticsearch:9.1.2
         container_name: elasticsearch
         environment:
             - node.name=es01
@@ -52,6 +54,8 @@ services:
             interval: 10s
             timeout: 10s
             retries: 120
+        ports:
+            - "9200:9200"
 
     #rabbitmq:
 

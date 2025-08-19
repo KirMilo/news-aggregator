@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
-    'users',
-    'news',
-    'news.comments',
+    'users.apps.UsersConfig',
+    'news.apps.NewsConfig',
+    'news.comments.apps.CommentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'db_service.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -97,10 +97,8 @@ DATABASES = {
 # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html#install-and-configure
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': f'{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}',
+        'hosts': f'http://{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}',
         'http_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
-        'use_ssl': False,
-        'verify_certs': False,
     }
 }
 
@@ -165,12 +163,12 @@ REST_FRAMEWORK = {
     ),  # Имеет самый низкий приоритет
     'DEFAULT_AUTHENTICATION_CLASSES': (  # Способы аутентификация
         # 'rest_framework.authentication.TokenAuthentication',  # Разрешаем аутентификацию по токену
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Разрешаем аутентификацию по JWT
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # Разрешаем аутентификацию по JWT
         'rest_framework.authentication.SessionAuthentication',  # Разрешаем аутентификацию по сессии
         'rest_framework.authentication.BasicAuthentication',  # Тоже сессии (Эти две строчки по умолчанию)
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # Пагинация Для всего проекта
-    'PAGE_SIZE': 2,  # Размер страницы при пагинации
+    'PAGE_SIZE': 10,  # Размер страницы при пагинации
 }
 
 AUTH_USER_MODEL = 'users.User'

@@ -23,7 +23,7 @@ class CreateNewsAPIView(generics.CreateAPIView):
     serializer_class = CreateNewsSerializer
 
     @staticmethod
-    def news_models(serializer_data: Iterable) -> itertools.chain:
+    def news_to_models(serializer_data: Iterable) -> itertools.chain:
         news: list[Generator] = []
         for item in serializer_data:
             source = item.source
@@ -35,7 +35,7 @@ class CreateNewsAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
-        news = self.news_models(serializer.validated_data)  # или .data
+        news = self.news_to_models(serializer.validated_data)
         News.objects.bulk_create(news)
         headers = self.get_success_headers(serializer.data)
         return Response(status=status.HTTP_201_CREATED, headers=headers)
@@ -60,17 +60,19 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
     serializer_class = NewsModelSerializer
 
 
-class NewsDocumentView(DocumentViewSet):
+class NewsSearchDocumentAPIView(DocumentViewSet):
     """ViewSet для получения новостей из Elasticsearch"""  # Ручка для поиска новостей через Elasticsearch
     document = NewsDocument
     serializer_class = NewsDocumentSerializer
+
+    search_fields = ("title", "body",)  # Определяем поля для поиска
 
     filter_backends = (  # TODO: Чекнуть доку
         FilteringFilterBackend,
         CompoundSearchFilterBackend,
         OrderingFilterBackend,
     )
-    search_fields = ("title", "body",)  # TODO: Чекнуть доку
+
     filter_fields = {
         "id": "id",
         "time_created": "time_created",

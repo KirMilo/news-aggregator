@@ -202,6 +202,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# news-agregator
+postgres
+elasticsearch
+
 # tmp
 news-agregator.drawio
 NOTES.md
