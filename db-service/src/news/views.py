@@ -3,9 +3,8 @@ import itertools
 from typing import Iterable, Generator
 
 from rest_framework import generics, status
-from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf import viewsets as elastic_viewsets
 from django_elasticsearch_dsl_drf.filter_backends import (
-    FilteringFilterBackend,
     CompoundSearchFilterBackend,
     OrderingFilterBackend,
 )
@@ -17,7 +16,7 @@ from .pagination import NewsAPIListPagination
 from .serializers import NewsModelSerializer, NewsDocumentSerializer, CreateNewsSerializer
 
 
-class CreateNewsAPIView(generics.CreateAPIView):
+class CreateNewsAPIView(generics.CreateAPIView):  # TODO: Это протестить
     """ViewSet для создания новостей в БД"""
     queryset = News.objects.all()
     serializer_class = CreateNewsSerializer
@@ -41,47 +40,46 @@ class CreateNewsAPIView(generics.CreateAPIView):
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 
 
-class FreshNewsAPIView(generics.ListAPIView):
+class FreshNewsAPIView(generics.ListAPIView):  # Тут вроде ок
     """Получить список свежих новостей по категории или без категории"""
-    queryset = News.objects.all().order_by("-published_at")
     serializer_class = NewsModelSerializer
     pagination_class = NewsAPIListPagination
 
     def get_queryset(self):
-        queryset = self.queryset
-        if category := self.kwargs.get("category"):
+        queryset = News.objects.all().order_by("-published_at")
+        if category := self.request.query_params.get("category"):  # Noqa
             queryset = queryset.filter(category=category)
         return queryset
 
 
-class NewsByPKAPIView(generics.RetrieveAPIView):
+class NewsByPKAPIView(generics.RetrieveAPIView):  # Тут вроде ок
     """Получить новость по id"""
-    queryset = News.objects.all()
     serializer_class = NewsModelSerializer
 
+    def get_queryset(self):
+        queryset = News.objects.filter(pk=self.kwargs["pk"])
+        return queryset
 
-class NewsSearchDocumentAPIView(DocumentViewSet):
+
+class NewsSearchDocumentViewSet(elastic_viewsets.DocumentViewSet):  # TODO: Это протестить
     """ViewSet для получения новостей из Elasticsearch"""  # Ручка для поиска новостей через Elasticsearch
     document = NewsDocument
     serializer_class = NewsDocumentSerializer
 
-    search_fields = ("title", "body",)  # Определяем поля для поиска
-
-    filter_backends = (  # TODO: Чекнуть доку
-        FilteringFilterBackend,
-        CompoundSearchFilterBackend,
-        OrderingFilterBackend,
+    filter_backends = (  # Это фильтры, которые будут применяться к запросу
+        # FilteringFilterBackend, # Точная фильтрация по конкретным полям
+        CompoundSearchFilterBackend,  # Поиск по нескольким полям, определенным в search_fields
+        OrderingFilterBackend,  # Сортировка результатов по полям
     )
 
-    filter_fields = {
-        "id": "id",
-        "time_created": "time_created",
-    }
-    ordering_fields = {
-        "id": None,
-        "title": "title.keyword",
+    search_fields = ("title", "body",)  # Определяем поля для полнотекстового поиска
+
+    ordering_fields = {  # Указываем поля для упорядочивания
+        "published_at": None,   # Слева - это название в Query, справа - это название в Документе.
+        # None - это значит, что названия в Query и в Документе совпадают.
     }
 
+    ordering = ("-published_at",)  # Указываем порядок сортировки по умолчанию
 
 # get_category_list
 

@@ -8,5 +8,5 @@ urlpatterns = (
     path('create/', news_views.CreateNewsAPIView.as_view()),
     path('', news_views.FreshNewsAPIView.as_view()),
     path('<int:pk>/', news_views.NewsByPKAPIView.as_view()),
-    path('search/', news_views.NewsSearchDocumentAPIView.as_view({'get': 'list'})),
+    path('search/', news_views.NewsSearchDocumentViewSet.as_view({'get': 'list'})),
 )
