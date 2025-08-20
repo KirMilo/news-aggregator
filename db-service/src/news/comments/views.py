@@ -1,6 +1,5 @@
-from rest_framework import generics, status, permissions, viewsets
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from django.db.utils import IntegrityError
 
 from .serializers import CommentModelSerializer, CommentCreateModelSerializer

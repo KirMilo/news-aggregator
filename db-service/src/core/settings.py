@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
+
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -44,7 +46,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'users.apps.UsersConfig',
+    'users.auth_users.apps.AuthUsersConfig',
     'news.apps.NewsConfig',
     'news.comments.apps.CommentsConfig',
 ]
@@ -163,12 +168,20 @@ REST_FRAMEWORK = {
     ),  # Имеет самый низкий приоритет
     'DEFAULT_AUTHENTICATION_CLASSES': (  # Способы аутентификация
         # 'rest_framework.authentication.TokenAuthentication',  # Разрешаем аутентификацию по токену
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # Разрешаем аутентификацию по JWT
-        'rest_framework.authentication.SessionAuthentication',  # Разрешаем аутентификацию по сессии
-        'rest_framework.authentication.BasicAuthentication',  # Тоже сессии (Эти две строчки по умолчанию)
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Разрешаем аутентификацию по JWT
+        # 'rest_framework.authentication.SessionAuthentication',  # Разрешаем аутентификацию по сессии
+        # 'rest_framework.authentication.BasicAuthentication',  # Тоже сессии (Эти две строчки по умолчанию)
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # Пагинация Для всего проекта
     'PAGE_SIZE': 10,  # Размер страницы при пагинации
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+
+SIMPLE_JWT = {
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
