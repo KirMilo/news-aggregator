@@ -1,51 +1,37 @@
 from abc import ABC, abstractmethod
-from typing import Type, List, Any
+from typing import Type, List, Any, Dict
 
-from schemas import ParsedNews, Resource
+from src.schemas import ParsedNews, Resource, ProcessingNews
 
 
-class HandlerInterface(ABC):
+class FeedHandlerInterface(ABC):
+    def __init__(self, feed: str | Dict[str, Any]):
+        self.feed = feed
+
     @abstractmethod
-    def handle(self):
+    def handle(self) -> List[ProcessingNews]:
         pass
 
+class ItemHandlerInterface(ABC):
+    def __init__(self, item: str | Dict[str, Any]):
+        self.item = item
 
-class FeedHandlerInterface(HandlerInterface, ABC):
     @abstractmethod
-    def __init__(self, feed):
-        pass
-
-class ItemHandlerInterface(HandlerInterface, ABC):
-    @abstractmethod
-    def __init__(self, item):
+    def handle(self) -> str:
         pass
 
 
 class ParserInterface(ABC):
     feed_urls: str | List[str]
-    _headers: dict[str, Any]
     feed_handler: Type[FeedHandlerInterface]
     items_handler: Type[ItemHandlerInterface]
 
-
     @abstractmethod
     def __init__(self, resource: Resource):
-        pass
+        self.resource = resource
 
     @abstractmethod
     def parse(self):
-        pass
-
-    @abstractmethod
-    def _parse_feed(self):
-        pass
-
-    @abstractmethod
-    def _filter_items(self, items):
-        pass
-
-    @abstractmethod
-    def _parse_items(self, items):
         pass
 
     @property
@@ -54,5 +40,5 @@ class ParserInterface(ABC):
         pass
 
     @abstractmethod
-    def is_processed(self, link: str) -> bool:
+    def is_supported(self, link: str) -> bool:
         pass

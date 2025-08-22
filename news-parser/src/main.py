@@ -1,31 +1,25 @@
-from typing import List
+from celery import Celery
+from celery.schedules import crontab
 
-from src.schemas import Resource
+from src.constants import PARSING_INTERVAL_MINUTES
+from src.news_parser import NewsParser
+
+app = Celery("news_parser")
+
+app.conf.beat_schedule = {
+    "parsing": {
+        "task": "tasks.main",
+        "schedule": crontab(minute=f"*/{PARSING_INTERVAL_MINUTES}"),
+    }
+}
 
 
-def get_resources():
-    pass
+def start_parsing_news():
+    news_parser = NewsParser()
+    news_parser.parse()
+    news_parser.create_news()
 
 
-def parse():
-    pass
-
-
+@app.task
 def main():
-    pass
-
-
-class NewsParser:
-    def __init__(self, resources: List[Resource]):
-        self.resources = resources
-        self.parsers = None
-
-    def parse(self):
-        feed = self.parse_feed()
-
-    def get_resources(self):
-        pass
-
-    def parsed_data(self):
-        pass
-
+    start_parsing_news()
