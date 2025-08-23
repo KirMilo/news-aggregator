@@ -4,18 +4,22 @@ from typing import Type, List, Any, Dict
 from src.schemas import ParsedNews, Resource, ProcessingNews
 
 
-class FeedHandlerInterface(ABC):
-    def __init__(self, feed: str | Dict[str, Any]):
-        self.feed = feed
+class HandlerInterface(ABC):
+    @abstractmethod
+    def __init__(self, data: str | Dict[str, Any]):  # noqa
+        pass
 
+    @abstractmethod
+    def handle(self) -> Any:
+        pass
+
+
+class FeedHandlerInterface(HandlerInterface, ABC):
     @abstractmethod
     def handle(self) -> List[ProcessingNews]:
         pass
 
-class ItemHandlerInterface(ABC):
-    def __init__(self, item: str | Dict[str, Any]):
-        self.item = item
-
+class ItemHandlerInterface(HandlerInterface, ABC):
     @abstractmethod
     def handle(self) -> str:
         pass
@@ -28,7 +32,7 @@ class ParserInterface(ABC):
 
     @abstractmethod
     def __init__(self, resource: Resource):
-        self.resource = resource
+        pass
 
     @abstractmethod
     def parse(self):

@@ -39,7 +39,7 @@ class ParserBase(ParserInterface, ABC):
     def _filter_items(self, items: List[ProcessingNews]) -> List[News]:
         filtered_items = []
         for item in items:
-            if item.published_at > self._updated_at:
+            if item.published_at <= self._updated_at:
                 break
             filtered_items.append(News(**item.model_dump()))
         return filtered_items

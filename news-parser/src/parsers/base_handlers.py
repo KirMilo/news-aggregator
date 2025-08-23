@@ -1,0 +1,32 @@
+from abc import ABC
+from typing import List, Dict, Any, Callable
+
+from bs4 import BeautifulSoup
+
+from parsers.interfaces import FeedHandlerInterface, ItemHandlerInterface, HandlerInterface
+
+
+class UnprocessableHtmlData(Exception):
+    pass
+
+
+def try_parse_wrapper(func: Callable):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except:
+            raise UnprocessableHtmlData
+    return wrapper
+
+
+class HandlerBase(HandlerInterface, ABC):
+    def __init__(self, data: str | Dict[str, Any]):
+        self.data = BeautifulSoup(data, "lxml")
+
+
+class FeedHandlerBase(HandlerBase, FeedHandlerInterface, ABC):
+    pass
+
+
+class ItemHandlerBase(HandlerBase, ItemHandlerInterface, ABC):
+    pass
