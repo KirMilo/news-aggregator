@@ -17,7 +17,11 @@ class FeedHandler(FeedHandlerBase):
         data = (
             self.data
             .find("div", class_="js-news-feed-list")
-            .find_all("a", recursive=False)
+            .find_all(
+                "a",
+                class_="news-feed__item js-visited js-news-feed-item js-yandex-counter",
+                recursive=False
+            )
         )
         items = []
         for item in data:
@@ -26,7 +30,7 @@ class FeedHandler(FeedHandlerBase):
                     link=item.get("href"),
                     title=item.span.text.strip(),
                     published_at=self._get_datetime(
-                        item.find("span", class_="news-feed__item__date").text.strip()
+                        item.find("span", class_="news-feed__item__date").span.text.strip()
                     )
                 )
             )
@@ -37,11 +41,12 @@ class ItemHandler(ItemHandlerBase):
         data = (
             self.data
             .find("div", class_="article__text article__text_free")
-            .find_all("p", recursive=False)
+            .find_all(recursive=False)
         )
         paragraphs = []
-        for p in data:
-            p = p.text.strip()
-            if p:
-                paragraphs.append(p)
+        for tag in data:
+            if tag.name == "p" or tag.name == "h2":
+                paragraph = tag.text.strip()
+                if tag:
+                    paragraphs.append(f"<b>{paragraph}</b>" if tag.name == "h2" else paragraph)
         return "\n\n".join(paragraphs)

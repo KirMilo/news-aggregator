@@ -55,4 +55,4 @@ class ItemHandler(ItemHandlerBase):
     def handle(self):
         soup = self.data.find("div", {"class": "article-content"})
         paragraphs = soup.find_all("p", recursive=False)
-        return "\n".join(p.text.strip() for p in paragraphs)
+        return "\n\n".join(p.text.strip() for p in paragraphs)
