@@ -9,5 +9,10 @@ https://www.rbc.ru/technology_and_media/
 https://lenta.ru/rubrics/science/
 
 https://sportrbc.ru/
-https://www.cybersport.ru/
-https://www.championat.com/auto/
+
+# В процессе
+https://www.cybersport.ru/tags/dota-2
+https://www.cybersport.ru/tags/cs2
+
+# Сделано
+https://www.championat.com/news/auto/1.html

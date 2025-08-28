@@ -1,26 +1,26 @@
-import pydantic
-import datetime
+from pydantic import BaseModel, HttpUrl
+from datetime import datetime
 from typing import List
 
 
-class Source(pydantic.BaseModel):
+class Source(BaseModel):
     id: int
-    link: pydantic.HttpUrl
-    updated_at: datetime.datetime
+    link: HttpUrl
+    updated_at: datetime
 
 
-class Resource(pydantic.BaseModel):
+class Resource(BaseModel):
     source: Source
     categories: List[int]
 
-class News(pydantic.BaseModel):
+class News(BaseModel):
     title: str
     body: str | None = None
-    link: pydantic.HttpUrl
+    link: HttpUrl
 
 
 class ProcessingNews(News):
-    published_at: datetime.datetime
+    published_at: datetime
 
 
 class ParsedNews(Resource):

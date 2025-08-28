@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Type, List, Any, Dict
 
-from src.schemas import ParsedNews, Resource, ProcessingNews
+from schemas import ParsedNews, Resource, ProcessingNews
 
 
 class HandlerInterface(ABC):
     @abstractmethod
-    def __init__(self, data: str | Dict[str, Any]):  # noqa
+    def __init__(self, data: str | Dict[str, Any], *args, **kwargs):  # noqa
         pass
 
     @abstractmethod

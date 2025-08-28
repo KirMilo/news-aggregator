@@ -1,5 +1,4 @@
-import datetime
-from typing import List
+from datetime import datetime
 
 from parsers.base_handlers import FeedHandlerBase, ItemHandlerBase
 from schemas import ProcessingNews
@@ -24,12 +23,12 @@ class FeedHandler(FeedHandlerBase):
     __URL = "https://www.championat.com"
 
     @staticmethod
-    def _get_datetime(date: str, time: str) -> datetime.datetime:
+    def _get_datetime(date: str, time: str) -> datetime:
         dt_list = date.strip().lower().split(" ")[::-1] + time.strip().split(":")
         dt_list[1] = MONTHS[dt_list[1]]
-        return datetime.datetime(*map(lambda i: int(i), dt_list))
+        return datetime(*map(lambda i: int(i), dt_list))
 
-    def handle(self) -> List[ProcessingNews]:
+    def handle(self):
         soup = (self.data
                 .body.find("div", {"class": "page"})
                 .find("div", {"class": "page-content"})
@@ -53,7 +52,7 @@ class FeedHandler(FeedHandlerBase):
 
 
 class ItemHandler(ItemHandlerBase):
-    def handle(self) -> str:
+    def handle(self):
         soup = self.data.find("div", {"class": "article-content"})
         paragraphs = soup.find_all("p", recursive=False)
         return "\n".join(p.text.strip() for p in paragraphs)
