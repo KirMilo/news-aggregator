@@ -36,7 +36,6 @@ class NewsParser:
         for parser in self.parsers:
             parser.parse()
         self.news = [parser.parsed_data for parser in self.parsers if parser.parsed_data]
-        return self.news  # TODO: Протестировать и убрать эту строку
 
     def create_news(self):
         with HttpxClient(
