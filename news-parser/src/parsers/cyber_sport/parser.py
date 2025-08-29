@@ -11,7 +11,10 @@ TAGS_ID = {
 
 
 class Parser(ParserBase):
-    feed_urls = ["https://www.cybersport.ru/tags/dota-2", "https://www.cybersport.ru/tags/cs2"]
+    feed_urls = [
+        "https://www.cybersport.ru/tags/dota-2",
+        "https://www.cybersport.ru/tags/cs2",
+    ]
     feed_handler = FeedHandler
     items_handler = ItemHandler
     parse_feed_strategy = "JSON"

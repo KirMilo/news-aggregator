@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from parsers.interfaces import FeedHandlerInterface, ItemHandlerInterface, HandlerInterface
 
 
-class UnprocessableHtmlData(Exception):
+class UnprocessableData(Exception):
     pass
 
 
@@ -15,7 +15,7 @@ def try_parse_wrapper(func: Callable):
         try:
             return func(*args, **kwargs)
         except:
-            raise UnprocessableHtmlData
+            raise UnprocessableData
     return wrapper
 
 

@@ -20,7 +20,7 @@ MONTHS = {
 
 
 class FeedHandler(FeedHandlerBase):
-    __URL = "https://www.championat.com"
+    __prefix = "https://www.championat.com"
 
     @staticmethod
     def _get_datetime(date: str, time: str) -> datetime:
@@ -45,7 +45,7 @@ class FeedHandler(FeedHandlerBase):
                 ProcessingNews(
                     published_at=self._get_datetime(date, item.div.text),
                     title=a.text,
-                    link=self.__URL + a.attrs["href"],
+                    link=self.__prefix + a.attrs["href"],
                 )
             )
         return items
