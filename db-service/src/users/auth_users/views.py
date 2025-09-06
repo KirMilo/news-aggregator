@@ -10,7 +10,7 @@ from users.auth_users.serializers import RegistrationSerializer
 # https://habr.com/ru/articles/793058/
 
 class RegistrationApiView(APIView):  # RegisterUser
-    def post(self, request):
+    def post(self, request):  # NOQA
         serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid()
 
@@ -36,7 +36,7 @@ class RegistrationApiView(APIView):  # RegisterUser
 
 
 class LoginAPIView(APIView):  # LoginUser
-    def post(self, request):
+    def post(self, request):  # NOQA
         data = request.data
 
         username = data.get("username")
@@ -85,7 +85,7 @@ class LoginAPIView(APIView):  # LoginUser
 
 
 class LogoutAPIView(APIView):  # LogoutUser
-    def post(self, request):
+    def post(self, request):  # NOQA
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
             return Response(
