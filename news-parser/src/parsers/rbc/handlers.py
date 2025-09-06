@@ -1,17 +1,18 @@
 from datetime import datetime, timedelta
 
 from parsers.base_handlers import FeedHandlerBase, ItemHandlerBase
-from schemas import ProcessingNews
+from schemas import News
 
 
 class FeedHandler(FeedHandlerBase):
-    @staticmethod
-    def _get_datetime(dt: str) -> datetime:
+    tz = str(FeedHandlerBase.tz)[3:]
+
+    def _get_datetime(self, dt: str) -> datetime:
         dt = dt.split(",\xa0")
         today = datetime.now().date()
         if len(dt) > 2:
             today -= timedelta(days=1)
-        return datetime.fromisoformat(str(today) + "T" + dt[-1])
+        return datetime.fromisoformat(str(today) + "T" + dt[-1] + self.tz)
 
     def handle(self):
         data = (
@@ -26,7 +27,7 @@ class FeedHandler(FeedHandlerBase):
         items = []
         for item in data:
             items.append(
-                ProcessingNews(
+                News(
                     link=item.get("href"),
                     title=item.span.text.strip(),
                     published_at=self._get_datetime(

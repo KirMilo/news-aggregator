@@ -2,7 +2,7 @@ from httpx import Client as HttpxClient
 from typing import List, Dict, Any
 
 from constants import DB_SERVICE_URL, RESOURCES_ENDPOINT_GET, CREATE_NEWS_ENDPOINT_POST
-from schemas import Resource
+from schemas import Source, CreateNews
 from parsers import ParserInterface, PARSERS_CLASSES
 
 
@@ -11,20 +11,20 @@ class NewsParser:
         self.db_service_url = DB_SERVICE_URL
         self.resources_endpoint_get = RESOURCES_ENDPOINT_GET
         self.create_news_endpoint_post = CREATE_NEWS_ENDPOINT_POST
-        self.resources = [Resource(**resource) for resource in self._get_resources()]
+        self.sources = [Source(**source) for source in self._get_sources()]
         self.parsers = self._get_parsers()
-        self.news = None
+        self.output_data = None
 
     def _get_parsers(self) -> List[ParserInterface]:
         parsers = []
-        for resource in self.resources:
-            url = str(resource.source.link)
+        for source in self.sources:
+            url = str(source.link)
             for parser_class in PARSERS_CLASSES:
                 if parser_class.is_supported(url):
-                    parsers.append(parser_class(resource))
+                    parsers.append(parser_class(source))
         return parsers
 
-    def _get_resources(self) -> List[Dict[str, Any]]:  # noqa
+    def _get_sources(self) -> List[Dict[str, Any]]:  # noqa
         with HttpxClient(
                 base_url=self.db_service_url,
         ) as client:
@@ -35,7 +35,7 @@ class NewsParser:
     def parse(self):
         for parser in self.parsers:
             parser.parse()
-        self.news = [parser.parsed_data for parser in self.parsers if parser.parsed_data]
+        self.output_data = [parser.parsed_data for parser in self.parsers if parser.parsed_data]
 
     def create_news(self):
         with HttpxClient(
@@ -43,6 +43,6 @@ class NewsParser:
         ) as client:
             response = client.post(
                 url=self.create_news_endpoint_post,
-                json=self.news
+                json=CreateNews(data=self.output_data).model_dump(),
             )
             response.raise_for_status()

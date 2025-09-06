@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Type, List, Any, Dict
 
-from schemas import ParsedNews, Resource, ProcessingNews
+from schemas import ParsedNews, Source, News
 
 
 class HandlerInterface(ABC):
@@ -16,7 +16,7 @@ class HandlerInterface(ABC):
 
 class FeedHandlerInterface(HandlerInterface, ABC):
     @abstractmethod
-    def handle(self) -> List[ProcessingNews]:
+    def handle(self) -> List[News]:
         pass
 
 class ItemHandlerInterface(HandlerInterface, ABC):
@@ -31,7 +31,7 @@ class ParserInterface(ABC):
     items_handler: Type[ItemHandlerInterface]
 
     @abstractmethod
-    def __init__(self, resource: Resource):
+    def __init__(self, source: Source):  # noqa
         pass
 
     @abstractmethod

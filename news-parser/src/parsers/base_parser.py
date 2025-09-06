@@ -3,14 +3,13 @@ from httpx import (
     Response as HttpxResponse,
 )
 from enum import Enum
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from abc import ABC
 from typing import List, Dict, Any, Iterable
 
 from parsers.interfaces import ParserInterface
-from schemas import Resource, ParsedNews, News, ProcessingNews
-
-UTC_PLUS_3 = timezone(timedelta(hours=3))
+from schemas import Source, ParsedNews, News, UpdatedSource
+from constants import UTC_PLUS_3
 
 
 class ParseDataStrategy(Enum):
@@ -27,13 +26,14 @@ class ParserBase(ParserInterface, ABC):
     timeout = 30
     parse_feed_strategy = "HTML"
     items_feed_strategy = "HTML"
+    tz = UTC_PLUS_3
 
-    def __init__(self, resource: Resource):
+    def __init__(self, source: Source):
         self.parse_feed_strategy = ParseDataStrategy(self.parse_feed_strategy)
         self.parse_items_strategy = ParseDataStrategy(self.items_feed_strategy)
-        self._resource = resource
-        self._feed_url = resource.source.link
-        self._updated_at = resource.source.updated_at
+        self._source = source
+        self._feed_url = source.link
+        self.feed_url = self._feed_url
         self._data = None
 
     def _get_source_data(self, url: str) -> HttpxResponse:
@@ -53,20 +53,24 @@ class ParserBase(ParserInterface, ABC):
         else:
             return response.json()
 
-    def _filter_items(self, items: Iterable[ProcessingNews]) -> List[News]:
+    def _filter_items(self, items: Iterable[News]) -> List[News]:
         filtered_items = []
         for item in items:
-            if item.published_at <= self._updated_at:
+            if item.published_at <= self._source.updated_at:
                 break
-            filtered_items.append(News(**item.model_dump()))
+            filtered_items.append(item)
         return filtered_items
 
     def _get_item_data(self, url: str) -> str | None:
-        response = self._get_source_data(url)
-        if self.parse_items_strategy is ParseDataStrategy.HTML:
-            return response.content.decode("utf-8")
-        else:
-            return response.json()
+        try:
+            response = self._get_source_data(url)
+            if self.parse_items_strategy is ParseDataStrategy.HTML:
+                return response.content.decode("utf-8")
+            else:
+                return response.json()
+        except Exception as e:  # noqa
+            return None
+
 
     def _parse_news(self, items: List[News]) -> List[News]:
         parsed_news = []
@@ -79,9 +83,9 @@ class ParserBase(ParserInterface, ABC):
 
     def parse(self):
         feed = self._parse_feed()
-        self._resource.source.updated_at = datetime.now(tz=UTC_PLUS_3)
         items = self.feed_handler(feed).handle()
         filtered_items = self._filter_items(items)
+        self._source.updated_at = datetime.now(tz=self.tz)
         parsed_news = self._parse_news(filtered_items)
         self._data = parsed_news
 
@@ -89,13 +93,14 @@ class ParserBase(ParserInterface, ABC):
     def parsed_data(self) -> ParsedNews | None:
         if self._data:
             return ParsedNews(
-                **self._resource.model_dump(),
-                data=self._data,
+                source=UpdatedSource(**self._source.model_dump()),
+                news=self._data,
             )
         return None
 
-    def is_supported(self, link: str) -> bool:
-        if isinstance(self.feed_urls, str):
-            return link == self.feed_urls
+    @classmethod
+    def is_supported(cls, link: str) -> bool:
+        if isinstance(cls.feed_urls, str):
+            return link == cls.feed_urls
         else:
-            return link in self.feed_urls
+            return link in cls.feed_urls

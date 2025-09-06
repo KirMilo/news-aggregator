@@ -1,16 +1,16 @@
 from datetime import datetime
 from parsers.base_handlers import FeedHandlerBase, ItemHandlerBase
-from schemas import ProcessingNews
+from schemas import News
 
 
 class FeedHandler(FeedHandlerBase):
     __prefix = "https://lenta.ru"
+    tz = str(FeedHandlerBase.tz)[3:]
 
-    @staticmethod
-    def _get_datetime(date: str, time: str) -> datetime:
+    def _get_datetime(self, date: str, time: str) -> datetime:
         date = "-".join(date.split("/")[2:5])
         time = time.split(", ")[0]
-        return datetime.fromisoformat(date + "T" + time)
+        return datetime.fromisoformat(date + "T" + time + self.tz)
 
     def handle(self):
         data = (
@@ -21,7 +21,7 @@ class FeedHandler(FeedHandlerBase):
         items = []
         for item in data:
             items.append(
-                ProcessingNews(
+                News(
                     title=item.a.h3.text.strip(),
                     link=self.__prefix + item.a.get("href"),
                     published_at=self._get_datetime(

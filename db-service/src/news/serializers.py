@@ -23,12 +23,33 @@ class CreateNewsModelSerializer(serializers.ModelSerializer):
             "title",
             "body",
             "link",
+            "published_at"
         )
+        extra_kwargs = {
+            "published_at": {"read_only": False}
+        }
+
+
+class SourceDTModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Source
+        fields = (
+            "id",
+            "updated_at",
+        )
+        extra_kwargs = {
+            "id": {"read_only": False},
+            "updated_at": {"read_only": False},
+        }
+
+
+class CreateNewsFieldsSerializer(serializers.Serializer):
+    source = SourceDTModelSerializer()
+    news = serializers.ListField(child=CreateNewsModelSerializer())
 
 
 class CreateNewsSerializer(serializers.Serializer):
-    source = serializers.IntegerField()
-    data = serializers.ListField(child=CreateNewsModelSerializer())
+    data = serializers.ListField(child=CreateNewsFieldsSerializer())
 
 
 class NewsByPKModelSerializer(serializers.ModelSerializer):

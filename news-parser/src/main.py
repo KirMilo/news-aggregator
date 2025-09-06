@@ -29,5 +29,5 @@ if __name__ == "__main__":
     from src.news_parser import NewsParser
 
     news_parser = NewsParser()
-    # news_parser.parse()
-    # news_parser.create_news()
+    news_parser.parse()
+    news_parser.create_news()

@@ -1,5 +1,4 @@
-import itertools
-from typing import Iterable
+from typing import List, Dict, Any
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from rest_framework import generics, status
@@ -31,23 +30,23 @@ class NewsSourcesAPIView(generics.ListAPIView):  # Тут ок
 
 class CreateNewsAPIView(generics.CreateAPIView):  # TODO: протестить
     """ViewSet для создания новостей в БД"""
-    queryset = News.objects.all()
     serializer_class = CreateNewsSerializer
 
     @staticmethod
-    def news_to_models(serializer_data: Iterable) -> itertools.chain:
-        news = []
+    def sources_news_create(serializer_data: List[Dict[str, Any]]):
         for item in serializer_data:
-            source = item.source
-            news += (News(source=source, **news_items) for news_items in item.data)
+            source = Source.objects.get(pk=item["source"]["id"])
+            source.updated_at = item["source"]["updated_at"]
+            source.save()
+            News.objects.bulk_create(News(source=source, **news_items) for news_items in item["news"])
 
-        return itertools.chain(*news)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=True)
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        news = self.news_to_models(serializer.validated_data)
-        News.objects.bulk_create(news)
+        print(serializer.validated_data)
+        self.sources_news_create(serializer.validated_data["data"])
         headers = self.get_success_headers(serializer.data)
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 

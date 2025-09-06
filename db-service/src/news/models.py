@@ -8,7 +8,7 @@ class News(models.Model):  # Новости
     link = models.URLField()
     active = models.BooleanField(default=True)
 
-    source = models.ForeignKey("Source", on_delete=models.SET_NULL, related_name='sources', null=True)
+    source = models.ForeignKey("Source", on_delete=models.SET_NULL, related_name='news', null=True)
 
     def __str__(self):
         return self.title

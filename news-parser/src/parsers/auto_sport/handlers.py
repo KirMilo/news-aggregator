@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from schemas import News
 from parsers.base_handlers import FeedHandlerBase, ItemHandlerBase
-from schemas import ProcessingNews
 
 MONTHS = {
     "января": "01",
@@ -22,11 +22,10 @@ MONTHS = {
 class FeedHandler(FeedHandlerBase):
     __prefix = "https://www.championat.com"
 
-    @staticmethod
-    def _get_datetime(date: str, time: str) -> datetime:
+    def _get_datetime(self, date: str, time: str) -> datetime:
         dt_list = date.strip().lower().split(" ")[::-1] + time.strip().split(":")
         dt_list[1] = MONTHS[dt_list[1]]
-        return datetime(*map(lambda i: int(i), dt_list))
+        return datetime(*map(lambda i: int(i), dt_list), tzinfo=self.tz)
 
     def handle(self):
         soup = (self.data
@@ -42,7 +41,7 @@ class FeedHandler(FeedHandlerBase):
         for item in soup.find_all("div", {"class": "news-item"}):
             a = item.find("a")
             items.append(
-                ProcessingNews(
+                News(
                     published_at=self._get_datetime(date, item.div.text),
                     title=a.text,
                     link=self.__prefix + a.attrs["href"],

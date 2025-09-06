@@ -1,8 +1,8 @@
 from abc import ABC
-from typing import List, Dict, Any, Callable
-
+from typing import Dict, Any, Callable
 from bs4 import BeautifulSoup
 
+from constants import UTC_PLUS_3
 from parsers.interfaces import FeedHandlerInterface, ItemHandlerInterface, HandlerInterface
 
 
@@ -25,7 +25,7 @@ class HandlerBase(HandlerInterface, ABC):
 
 
 class FeedHandlerBase(HandlerBase, FeedHandlerInterface, ABC):
-    pass
+    tz = UTC_PLUS_3
 
 
 class ItemHandlerBase(HandlerBase, ItemHandlerInterface, ABC):
