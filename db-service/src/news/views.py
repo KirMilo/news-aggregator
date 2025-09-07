@@ -28,7 +28,7 @@ class NewsSourcesAPIView(generics.ListAPIView):  # Тут ок
     pagination_class = None
 
 
-class CreateNewsAPIView(generics.CreateAPIView):  # TODO: протестить
+class CreateNewsAPIView(generics.CreateAPIView):
     """ViewSet для создания новостей в БД"""
     serializer_class = CreateNewsSerializer
 
@@ -51,7 +51,7 @@ class CreateNewsAPIView(generics.CreateAPIView):  # TODO: протестить
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 
 
-class FreshNewsAPIView(generics.ListAPIView):  # TODO: протестить
+class FreshNewsAPIView(generics.ListAPIView):
     """Получить список свежих новостей по категории или без категории"""
     serializer_class = NewsModelSerializer
     pagination_class = NewsAPIListPagination
@@ -72,7 +72,7 @@ class FreshNewsAPIView(generics.ListAPIView):  # TODO: протестить
         return queryset
 
 
-class NewsByPKAPIView(generics.RetrieveAPIView):  # Тут вроде ок
+class NewsByPKAPIView(generics.RetrieveAPIView):
     """Получить новость по id"""
     serializer_class = NewsByPKModelSerializer
 
@@ -81,7 +81,8 @@ class NewsByPKAPIView(generics.RetrieveAPIView):  # Тут вроде ок
             News.objects
             .select_related("source")
             .prefetch_related("categories")
-            .values("id", )
+            .values("id", "title", "body", "published_at")
+            .annotate(categories=ArrayAgg("source__categories__name"))
             .filter(pk=self.kwargs["pk"]))
         return queryset
 
