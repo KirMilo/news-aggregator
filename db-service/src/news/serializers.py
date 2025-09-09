@@ -1,13 +1,16 @@
+from django_elasticsearch_dsl_drf_alt.serializers import DocumentSerializer
 from rest_framework import serializers
 
 from .models import News, NewsImage, Source
 from .documents import NewsDocument
 
 
-class NewsDocumentSerializer(serializers.Serializer):
+class NewsDocumentSerializer(DocumentSerializer):
     class Meta:
         document = NewsDocument
-        fields = "__all__"
+        model = News
+        fields = ("id", "title", "body", "published_at")
+        read_only = True
 
 
 class NewsImagesModelSerializer(serializers.ModelSerializer):

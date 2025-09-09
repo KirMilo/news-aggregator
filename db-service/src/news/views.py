@@ -2,10 +2,10 @@ from typing import List, Dict, Any
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from rest_framework import generics, status
-from django_elasticsearch_dsl_drf import viewsets as elastic_viewsets
-from django_elasticsearch_dsl_drf.filter_backends import (
+from django_elasticsearch_dsl_drf_alt.viewsets import BaseDocumentViewSet
+from django_elasticsearch_dsl_drf_alt.filter_backends import (
     CompoundSearchFilterBackend,
-    OrderingFilterBackend,
+    OrderingFilterBackend, DefaultOrderingFilterBackend,
 )
 from rest_framework.response import Response
 
@@ -85,22 +85,34 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
         return queryset
 
 
-class NewsSearchDocumentViewSet(elastic_viewsets.DocumentViewSet):  # TODO: Это протестить
+class NewsSearchDocumentViewSet(BaseDocumentViewSet):
     """ViewSet для получения новостей из Elasticsearch"""  # Ручка для поиска новостей через Elasticsearch
     document = NewsDocument
     serializer_class = NewsDocumentSerializer
 
     filter_backends = (  # Это фильтры, которые будут применяться к запросу
         # FilteringFilterBackend, # Точная фильтрация по конкретным полям
-        CompoundSearchFilterBackend,  # Поиск по нескольким полям, определенным в search_fields
         OrderingFilterBackend,  # Сортировка результатов по полям
+        DefaultOrderingFilterBackend,  # Сортировка по умолчанию
+        CompoundSearchFilterBackend,  # Поиск по нескольким полям, определенным в search_fields
     )
 
-    search_fields = ("title", "body",)  # Определяем поля для полнотекстового поиска
+    search_fields = {
+        "title": {"fuzziness": "AUTO", "boost": 3},
+        "body": {"fuzziness": "AUTO", "boost": 1},
+    }  # Определяем поля для полнотекстового поиска
 
     ordering_fields = {  # Указываем поля для упорядочивания
         "published_at": None,  # Слева - это название в Query, справа - это название в Документе.
-        # None - это значит, что названия в Query и в Документе совпадают.
+        # None - совпадают.
     }
 
-    ordering = ("-published_at",)  # Указываем порядок сортировки по умолчанию
+    ordering = ("_score", "-published_at",)  # Указываем порядок сортировки по умолчанию # _score - релевантность
+
+    def get_queryset(self):
+        queryset = self.search.query(
+            "term",
+            active=True,
+        )  # Добавляем фильтрацию по active
+        queryset.model = self.document.Django.model
+        return queryset

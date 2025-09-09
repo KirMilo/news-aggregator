@@ -1,6 +1,7 @@
-from django_elasticsearch_dsl import Document, fields
+from django_elasticsearch_dsl import Document
 from django_elasticsearch_dsl.registries import registry
 from .models import News
+
 
 @registry.register_document
 class NewsDocument(Document):
@@ -19,4 +20,5 @@ class NewsDocument(Document):
             "title",
             "body",
             "published_at",
+            "active",
         ]

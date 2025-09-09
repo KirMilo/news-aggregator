@@ -44,9 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django_extensions",
+    'drf_spectacular',
     'rest_framework',
     'django_elasticsearch_dsl',
-    'django_elasticsearch_dsl_drf',
+    'django_elasticsearch_dsl_drf_alt',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'users.apps.UsersConfig',
@@ -104,8 +105,12 @@ DATABASES = {
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': f'http://{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}',
-        'http_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
+        'basic_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
     }
+}
+
+ELASTICSEARCH_INDEX_NAMES = {
+    "news.documents.news": "news",
 }
 
 # Redis
@@ -175,6 +180,14 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # Пагинация Для всего проекта
     'PAGE_SIZE': 10,  # Размер страницы при пагинации
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'News-Aggregator DB Service API',
+    'DESCRIPTION': 'News Aggregator DB Service',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 AUTH_USER_MODEL = 'users.User'
