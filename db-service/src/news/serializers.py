@@ -28,9 +28,6 @@ class CreateNewsModelSerializer(serializers.ModelSerializer):
             "link",
             "published_at"
         )
-        extra_kwargs = {
-            "published_at": {"read_only": False}
-        }
 
 
 class SourceDTModelSerializer(serializers.ModelSerializer):

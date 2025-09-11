@@ -4,7 +4,7 @@ from django.db import models
 class News(models.Model):  # Новости
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     body = models.TextField(verbose_name="Статья")
-    published_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
+    published_at = models.DateTimeField(verbose_name="Дата публикации")
     link = models.URLField(verbose_name="Ссылка")
     active = models.BooleanField(default=True, verbose_name="Опубликовано")
 
