@@ -1,6 +1,8 @@
 from typing import List, Dict, Any
 
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 from rest_framework import generics, status
 from django_elasticsearch_dsl_drf_alt.viewsets import BaseDocumentViewSet
 from django_elasticsearch_dsl_drf_alt.filter_backends import (
@@ -69,6 +71,9 @@ class FreshNewsAPIView(generics.ListAPIView):
 
         return queryset
 
+    @method_decorator(cache_page(60 * 3))
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
 class NewsByPKAPIView(generics.RetrieveAPIView):
     """Получить новость по id"""
@@ -83,6 +88,10 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
             .annotate(categories=ArrayAgg("source__categories__name"))
             .filter(pk=self.kwargs["pk"]))
         return queryset
+
+    @method_decorator(cache_page(60 * 3))
+    def get(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
 
 
 class NewsSearchDocumentViewSet(BaseDocumentViewSet):
