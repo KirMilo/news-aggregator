@@ -5,7 +5,7 @@ from news import views as news_views
 
 
 urlpatterns = [
-    path('<int:news>/comments/', include(comments_patterns)),
+    path('<int:pk>/comments/', include(comments_patterns)),
     path('sources/', news_views.NewsSourcesAPIView.as_view()),
     path('create/', news_views.CreateNewsAPIView.as_view()),
     path('', news_views.FreshNewsAPIView.as_view()),

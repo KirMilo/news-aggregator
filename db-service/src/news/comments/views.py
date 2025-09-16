@@ -2,24 +2,28 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from django.db.utils import IntegrityError
 
-from .serializers import CommentModelSerializer, CommentCreateModelSerializer
+from .serializers import CommentResponseSerializer, CommentCreateModelSerializer
 from .models import Comment
 
 
 class UsersCommentsByNewsPKAPIView(generics.ListAPIView):
     """Получить комментарии к новости"""
-    queryset = Comment.objects.filter(active=True).select_related("user")
-    serializer_class = CommentModelSerializer
+    serializer_class = CommentResponseSerializer
 
     def get_queryset(self):
-        queryset = self.queryset.filter(news=self.kwargs["news"])
-        return queryset.only("body", "user", "user__username", "user__avatar", )
+        queryset = (
+            Comment.objects.filter(active=True)
+            .select_related("user")
+            .filter(news=self.kwargs["pk"])
+            .values("id", "body", "published_at", "user__id", "user__username", "user__avatar", )
+        )
+        return queryset
 
 
 class CreateCommentByNewsPKAPIView(generics.CreateAPIView):
     """Добавить комментарий к новости"""
     serializer_class = CommentCreateModelSerializer
-    # permission_classes = (permissions.IsAuthenticated,) (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,) # (permissions.IsAuthenticatedOrReadOnly,)
 
     def create(self, request, *args, **kwargs):
         try:

@@ -3,7 +3,10 @@ from rest_framework import serializers
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    confirm_password = serializers.CharField(required=True, write_only=True)
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+    password2 = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = get_user_model()
@@ -11,11 +14,21 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'email',
             "username",
             "password",
-            "confirm_password",
+            "password2",
         )
-        extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
-        if data.get('password') != data.get('confirm_password'):
+        if data.get('password') != data.get('password2'):
             raise serializers.ValidationError({"Passwords don't match"})
-        return data
+        data.pop('password2')
+        return super().validate(data)
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(default=None)
+    email = serializers.EmailField(default=None)
+    password = serializers.CharField()
+
+
+class UserLogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required=True)

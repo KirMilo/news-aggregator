@@ -49,6 +49,3 @@ async def get_news_by_id(
     response = await session.get(NEWS_BY_ID_ENDPOINT % news_id,)
     data = await response.json()
     return data
-
-
-

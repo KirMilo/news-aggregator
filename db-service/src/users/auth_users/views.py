@@ -1,20 +1,22 @@
 from django.contrib.auth import authenticate
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.auth_users.serializers import RegistrationSerializer
+from users.auth_users.serializers import RegistrationSerializer, UserLoginSerializer, UserLogoutSerializer
 
 
 # https://habr.com/ru/articles/793058/
 
-class RegistrationApiView(APIView):  # RegisterUser
+@extend_schema(request=RegistrationSerializer)
+class RegistrationAPIView(APIView):  # RegisterUser
     def post(self, request):  # NOQA
         serializer = RegistrationSerializer(data=request.data)
-        serializer.is_valid()
+        serializer.is_valid(raise_exception=True)
 
-        user = serializer.save(raise_exception=True)
+        user = serializer.save()
         refresh = RefreshToken.for_user(user)
 
         refresh.payload.update(
@@ -34,8 +36,9 @@ class RegistrationApiView(APIView):  # RegisterUser
 
 # ConfirmRegisterUser
 
-
-class LoginAPIView(APIView):  # LoginUser
+@extend_schema(request=UserLoginSerializer)
+class LoginAPIView(APIView):
+    # LoginUser
     def post(self, request):  # NOQA
         data = request.data
 
@@ -83,7 +86,7 @@ class LoginAPIView(APIView):  # LoginUser
             status=status.HTTP_200_OK,
         )
 
-
+@extend_schema(request=UserLogoutSerializer)
 class LogoutAPIView(APIView):  # LogoutUser
     def post(self, request):  # NOQA
         refresh_token = request.data.get('refresh_token')
