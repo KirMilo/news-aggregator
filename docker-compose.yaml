@@ -80,13 +80,33 @@ services:
             retries: 3
         restart: unless-stopped
 
-    #rabbitmq:
+    rabbitmq:
+        image: rabbitmq:4-management-alpine
+        container_name: rabbitmq
+        hostname: rabbitmq
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+        volumes:
+            - ./rabbitmq:/var/lib/rabbitmq
 
     #promtail:
 
     #prometheus:
 
     #grafana:
+
+    #loki:
+
+
+#volumes:
+#    postgres-data:
+#    elasticsearch-data:
+#    redis-data:
+#    rabbitmq-data:
 
 networks:
     backend-network:
