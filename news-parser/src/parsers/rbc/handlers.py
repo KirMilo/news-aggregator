@@ -8,7 +8,7 @@ class FeedHandler(FeedHandlerBase):
     tz = str(FeedHandlerBase.tz)[3:]
 
     def _get_datetime(self, dt: str) -> datetime:
-        dt = dt.split(",\xa0")
+        dt = dt.split(", ")
         today = datetime.now().date()
         if len(dt) > 2:
             today -= timedelta(days=1)
@@ -17,25 +17,27 @@ class FeedHandler(FeedHandlerBase):
     def handle(self):
         data = (
             self.data
-            .find("div", class_="js-news-feed-list")
+            .find("div", class_="l-row js-load-container")
             .find_all(
-                "a",
-                class_="news-feed__item js-visited js-news-feed-item js-yandex-counter",
-                recursive=False
+                "div",
+                class_="item__wrap l-col-center",
             )
         )
         items = []
         for item in data:
+            a = item.find("a", recursive=False)
+
             items.append(
                 News(
-                    link=item.get("href"),
-                    title=item.span.text.strip(),
+                    link=a.get("href"),
+                    title=a.find("span", class_="normal-wrap").text.strip(),
                     published_at=self._get_datetime(
-                        item.find("span", class_="news-feed__item__date").span.text.strip()
+                        item.find("div", class_="item__bottom").span.text.strip(),
                     )
                 )
             )
         return items
+
 
 class ItemHandler(ItemHandlerBase):
     def handle(self):

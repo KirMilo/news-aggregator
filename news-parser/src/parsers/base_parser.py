@@ -37,6 +37,7 @@ class ParserBase(ParserInterface, ABC):
         self._data = None
 
     def _get_source_data(self, url: str) -> HttpxResponse:
+        print(f"Getting {url}")  # TODO: Удалить в проде
         with HttpxClient(
                 headers=self.headers,
                 timeout=self.timeout,
