@@ -139,7 +139,6 @@ CACHES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -190,10 +189,33 @@ SPECTACULAR_SETTINGS = {
 
 AUTH_USER_MODEL = 'users.User'
 
-
 SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+
+# RABBITMQ
+RABBIT_SETTINGS = {
+    'schema': 'amqp',
+    'host': os.environ['RABBIT_HOST'],
+    'port': os.environ['RABBIT_PORT'],
+    'user': os.environ['RABBIT_USER'],
+    'password': os.environ['RABBIT_PASSWORD'],
+}
+
+RABBITMQ_URL = (
+    '{schema}://{user}:{password}@{host}:{port}/'
+    .format(**RABBIT_SETTINGS)
+)
+
+# CELERY
+CELERY_BROKER_URL = RABBITMQ_URL
+CELERY_RESULT_BACKEND = 'rpc://'  # Положить результат в тот же брокер
+CELERY_WORKER_POOL = 'prefork'  # TODO В проде нужно поменять на 'prefork` то есть мультипроцесс
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'

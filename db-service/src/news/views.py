@@ -21,6 +21,7 @@ from .serializers import (
     SourceModelSerializer,
     NewsByPKModelSerializer,
 )
+from .news_signals.custom_signals import news_created_signal
 
 
 class NewsSourcesAPIView(generics.ListAPIView):  # Тут ок
@@ -42,11 +43,15 @@ class CreateNewsAPIView(generics.CreateAPIView):
             source.save()
             News.objects.bulk_create(News(source=source, **news_items) for news_items in item["news"])
 
+    def send_signal_on_create(self, serializer_data: List[Dict[str, Any]]):
+        sources_news = {item["source"]["id"]: len(item["news"]) for item in serializer_data}
+        news_created_signal.send(sender=self.__class__.__name__, data=sources_news)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.sources_news_create(serializer.validated_data["data"])
+        self.send_signal_on_create(serializer.validated_data["data"])
         headers = self.get_success_headers(serializer.data)
         return Response(status=status.HTTP_201_CREATED, headers=headers)
 

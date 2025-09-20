@@ -6,4 +6,4 @@ class NewsConfig(AppConfig):
     name = 'news'
 
     def ready(self):
-        import news.signals  # NOQA
+        import news.news_signals.signals  # noqa

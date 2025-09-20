@@ -4,7 +4,7 @@
 # from src.constants import PARSING_INTERVAL_MINUTES
 # from src.news_parser import NewsParser
 #
-# app = Celery("news_parser")
+# app = Celery("main")
 #
 # app.conf.beat_schedule = {
 #     "parsing": {
