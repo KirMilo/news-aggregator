@@ -1,6 +1,19 @@
 services:
     #db-service:
 
+    celery_worker:
+        build:
+            context: ./db-service
+        command: uv run celery -A core.celery worker --concurrency 1 --loglevel=INFO
+        depends_on:
+            - postgres
+            - elasticsearch
+            - redis
+            - rabbitmq
+        env_file:
+            -   ./db-service/.env.celery
+        networks:
+            - backend-network
     #auth-service:
 
     #backend:
@@ -81,17 +94,20 @@ services:
         restart: unless-stopped
 
     rabbitmq:
-        image: rabbitmq:4-management-alpine
+        image: rabbitmq:4.1.4-management-alpine
         container_name: rabbitmq
         hostname: rabbitmq
+        volumes:
+            - ./rabbitmq:/var/lib/rabbitmq
+        networks:
+            - backend-network
         ports:
             - "5672:5672"
             - "15672:15672"
         environment:
             RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-        volumes:
-            - ./rabbitmq:/var/lib/rabbitmq
+
 
     #promtail:
 

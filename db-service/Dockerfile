@@ -7,4 +7,6 @@ COPY . /app
 
 RUN uv sync --locked
 
+WORKDIR /app/src
+
 #CMD ["uv", "run", "gunicorn", "-c", "uvicorn", "-b", "127.0.0.1:8000", "--reload", "true", "-w", "4", "core.asgi"]

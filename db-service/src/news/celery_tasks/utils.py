@@ -28,7 +28,7 @@ class RabbitMQNews:
         categories_news = defaultdict(int)
         for source, news_count in sources_news_count.items():
             if news_count:
-                for category in sources_categories[source]:
+                for category in sources_categories[int(source)]:
                     categories_news[category] += news_count
         categories_news["all"] = sum(sources_news_count.values())
         return categories_news
@@ -107,5 +107,5 @@ class ElasticNews:
         bulk(es, actions)
 
     @classmethod
-    def update_registry(cls, news: News = News):
-        registry.update(news)
+    def update_registry(cls):
+        registry.update(News)

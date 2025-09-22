@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.environ['APP_SECRET_KEY']
+SECRET_KEY = os.environ.get('APP_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ['POSTGRES_HOST'],
-        'PORT': os.environ['POSTGRES_PORT'],
-        'NAME': os.environ['POSTGRES_DB'],
-        'USER': os.environ['POSTGRES_USER'],
-        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
     }
 }
 
@@ -104,8 +104,8 @@ DATABASES = {
 # https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html#install-and-configure
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': f'http://{os.environ['ELASTIC_HOST']}:{os.environ['ELASTIC_PORT']}',
-        'basic_auth': ('elastic', os.environ['ELASTIC_PASSWORD']),
+        'hosts': f'http://{os.environ.get('ELASTIC_HOST')}:{os.environ.get('ELASTIC_PORT')}',
+        'basic_auth': ('elastic', os.environ.get('ELASTIC_PASSWORD')),
     }
 }
 
@@ -128,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{os.environ['REDIS_HOST']}:{os.environ['REDIS_PORT']}/{os.environ['REDIS_DB']}',
+        'LOCATION': f'redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/{os.environ.get('REDIS_DB')}',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -200,10 +200,10 @@ SIMPLE_JWT = {
 # RABBITMQ
 RABBIT_SETTINGS = {
     'schema': 'amqp',
-    'host': os.environ['RABBIT_HOST'],
-    'port': os.environ['RABBIT_PORT'],
-    'user': os.environ['RABBIT_USER'],
-    'password': os.environ['RABBIT_PASSWORD'],
+    'host': os.environ.get('RABBIT_HOST'),
+    'port': os.environ.get('RABBIT_PORT'),
+    'user': os.environ.get('RABBIT_USER'),
+    'password': os.environ.get('RABBIT_PASSWORD'),
 }
 
 RABBITMQ_URL = (
@@ -214,7 +214,7 @@ RABBITMQ_URL = (
 # CELERY
 CELERY_BROKER_URL = RABBITMQ_URL
 CELERY_RESULT_BACKEND = 'rpc://'  # Положить результат в тот же брокер
-CELERY_WORKER_POOL = 'prefork'  # TODO В проде нужно поменять на 'prefork` то есть мультипроцесс
+CELERY_WORKER_POOL = 'prefork'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
