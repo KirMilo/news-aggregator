@@ -5,7 +5,7 @@ class News(models.Model):  # Новости
     title = models.CharField(max_length=255, verbose_name="Заголовок")
     body = models.TextField(verbose_name="Статья")
     published_at = models.DateTimeField(verbose_name="Дата публикации")
-    link = models.URLField(verbose_name="Ссылка")
+    link = models.URLField(verbose_name="Ссылка", null=True, blank=True)
     active = models.BooleanField(default=True, verbose_name="Опубликовано")
 
     source = models.ForeignKey(
