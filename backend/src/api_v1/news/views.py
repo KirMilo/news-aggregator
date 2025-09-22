@@ -2,10 +2,13 @@ from typing import Annotated
 
 from aiohttp import ClientSession
 from fastapi import APIRouter, Depends, Path, Query
+from starlette.websockets import WebSocket
 
 from api_v1.news.schemas.input import NewsParams
 from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel
+from api_v1.utils import WebSocketManager
 from core.http_session import get_http_session
+from rabbit.news import NewsMessagesQueue, get_news_messages_queue
 
 router = APIRouter(
     tags=["News"],
@@ -49,3 +52,14 @@ async def get_news_by_id(
     response = await session.get(NEWS_BY_ID_ENDPOINT % news_id,)
     data = await response.json()
     return data
+
+
+@router.websocket("/updates")
+async def news_updates(
+        websocket: WebSocket,
+        queue: NewsMessagesQueue = Depends(get_news_messages_queue),
+):
+    async with WebSocketManager(websocket):
+        queue.set_websocket(websocket)
+        while True:
+            await queue.send_update_on_receipt()

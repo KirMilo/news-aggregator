@@ -1,3 +1,5 @@
+from typing import AsyncGenerator
+
 from aio_pika.abc import AbstractConnection
 from aio_pika import connect_robust
 
@@ -30,3 +32,8 @@ class RabbitConnection:
         if not self._consumers_count:
             await self._connection.close()
             self._connection = None
+
+
+async def get_rabbit_connection() -> AsyncGenerator[AbstractConnection, None]:
+    async with RabbitConnection() as connection:
+        yield connection

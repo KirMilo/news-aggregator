@@ -1,0 +1,2 @@
+class MessageQueueException(Exception):
+    pass
