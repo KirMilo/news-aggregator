@@ -205,6 +205,8 @@ __marimo__/
 # news-agregator
 postgres
 elasticsearch
+rabbitmq
+redis
 
 # tmp
 news-agregator.drawio
