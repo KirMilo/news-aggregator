@@ -51,6 +51,16 @@ def create_sources_and_categories(*args, **kwargs):  # NOQA
     ]
     Category.objects.bulk_create(categories)
     categories_map = {category.name: category for category in categories}
+    categories_map["Просто спорт"].parent = categories_map["Спорт"]
+    categories_map["Автоспорт"].parent = categories_map["Спорт"]
+    categories_map["Киберспорт"].parent = categories_map["Спорт"]
+    categories_map["Экономика"].parent = categories_map["Экономика и финансы"]
+    categories_map["Финансы"].parent = categories_map["Экономика и финансы"]
+    categories_map["Наука"].parent = categories_map["Наука и технологии"]
+    categories_map["Технологии"].parent = categories_map["Наука и технологии"]
+
+    for cat in categories_map.values():
+        cat.save()
 
     sources = [
         (
@@ -123,6 +133,13 @@ def create_sources_and_categories(*args, **kwargs):  # NOQA
             ),
             [categories_map["Наука и технологии"], categories_map["Технологии"]],
         ),
+        (
+            Source(  # Сам агрегатор
+                link="https://news-aggregator/",
+                active=False,
+            ),
+            list(categories_map.values()),
+        )
     ]
 
     for source, categories in sources:
