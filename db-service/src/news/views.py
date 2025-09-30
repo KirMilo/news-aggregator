@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List, Dict, Any
 
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -11,7 +12,7 @@ from django_elasticsearch_dsl_drf_alt.filter_backends import (
 )
 from rest_framework.response import Response
 
-from .models import News, Source
+from .models import News, Source, Category
 from .documents import NewsDocument
 from .pagination import NewsAPIListPagination
 from .serializers import (
@@ -20,6 +21,7 @@ from .serializers import (
     CreateNewsSerializer,
     SourceModelSerializer,
     NewsByPKModelSerializer,
+    CategoriesModelSerializer,
 )
 from .news_signals.custom_signals import news_created_signal
 
@@ -29,6 +31,23 @@ class NewsSourcesAPIView(generics.ListAPIView):  # Тут ок
     serializer_class = SourceModelSerializer
     queryset = Source.objects.filter(active=True)
     pagination_class = None
+
+
+class NewsCategoriesAPIView(generics.ListAPIView):
+    """Получить список категорий новостей"""
+    serializer_class = CategoriesModelSerializer
+    queryset = Category.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        cats = self.filter_queryset(self.get_queryset())
+        parents = defaultdict(list)
+        for category in filter(lambda cat: cat.parent_id is not None, cats):
+            parents[category.parent_id].append(category)
+        for category in cats:
+            category.children = parents[category.id]
+        serializer = self.get_serializer([cat for cat in cats if cat.parent_id is None], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CreateNewsAPIView(generics.CreateAPIView):
@@ -130,3 +149,6 @@ class NewsSearchDocumentViewSet(BaseDocumentViewSet):
         )  # Добавляем фильтрацию по active
         queryset.model = self.document.Django.model
         return queryset
+
+
+

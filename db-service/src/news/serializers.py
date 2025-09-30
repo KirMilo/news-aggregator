@@ -1,7 +1,7 @@
 from django_elasticsearch_dsl_drf_alt.serializers import DocumentSerializer
 from rest_framework import serializers
 
-from .models import News, NewsImage, Source
+from .models import News, NewsImage, Source, Category
 from .documents import NewsDocument
 
 
@@ -85,4 +85,23 @@ class SourceModelSerializer(serializers.ModelSerializer):
             "id",
             "link",
             "updated_at",
+        )
+
+
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.to_representation(value)
+
+
+class CategoriesModelSerializer(serializers.ModelSerializer):
+    children = RecursiveField(many=True, allow_null=True, default=None)
+
+    class Meta:
+        model = Category
+        fields = (
+            "id",
+            "name",
+            "slug",
+            "children",
         )
