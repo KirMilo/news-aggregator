@@ -1,0 +1,48 @@
+/* .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    height: 50px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+} */
+
+@import url("./SearchNewsSection");
+
+.main-header {
+    position: sticky;
+    /* Закрепляем хедер вверху страницы */
+    top: 0;
+    z-index: 1000;
+    /* Гарантируем, что хедер будет поверх остального контента */
+
+    /* Фон и тени для визуального выделения */
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 40px;
+
+    display: flex;
+    /* Используем Flexbox для выравнивания логотипа, поиска и навигации */
+    justify-content: space-between;
+    /* Распределяем элементы по ширине */
+    align-items: center;
+    /* Центрируем элементы по вертикали */
+
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    /* Основной цвет сайта */
+    display: flex;
+}

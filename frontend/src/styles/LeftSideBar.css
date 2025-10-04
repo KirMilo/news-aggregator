@@ -1,0 +1,102 @@
+/* --- Общие стили сайдбара --- */
+.left-sidebar {
+    margin-top: 20px;
+    width: 280px;
+    /* Фиксированная ширина */
+    padding: 15px;
+    background-color: #f4f4f9;
+    border-right: 1px solid #ddd;
+    font-family: sans-serif;
+    color: #333;
+    position: absolute;
+}
+
+.left-sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #1a1a1a;
+}
+
+/* --- Стили для списка категорий --- */
+.news-categories-list {
+    position: relative;
+    list-style: none;
+    /* Убираем стандартные маркеры */
+    padding: 0;
+    margin: 0;
+}
+
+/* --- Стили для отдельного элемента категории --- */
+.news-category-item {
+    margin-bottom: 2px;
+}
+
+/* Контейнер для ссылки и кнопки раскрытия */
+.news-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+/* Ссылка на категорию */
+.news-category-link {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    flex-grow: 1;
+    /* Чтобы ссылка занимала все доступное место */
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.news-category-link:hover {
+    background-color: #e0e0e0;
+    color: #000;
+}
+
+/* --- Стили для кнопки раскрытия --- */
+.toggle-button {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    padding: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.toggle-button:hover {
+    background-color: #ccc;
+}
+
+/* Стили для кнопки в раскрытом состоянии (можно использовать для анимации стрелки) */
+/* .toggle-button.open {
+  transform: rotate(45deg); 
+} */
+
+/* --- Стили для вложенных списков --- */
+.sub-news-categories {
+    list-style: none;
+    padding-left: 15px;
+    /* Отступ для визуального выделения вложенности */
+    margin: 0;
+    border-left: 1px solid #ccc;
+    /* Вертикальная линия для выделения ветки */
+}
+
+/* Отдельные стили для ссылок вложенных категорий */
+.sub-news-categories .news-category-link {
+    font-size: 0.95em;
+    padding-left: 0;
+    /* Убираем дополнительный внутренний отступ */
+}

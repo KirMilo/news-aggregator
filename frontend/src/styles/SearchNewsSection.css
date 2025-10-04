@@ -1,0 +1,50 @@
+.search-form {
+    display: flex;
+    /* Flexbox для размещения input и button в линию */
+    border: 2px solid #007bff;
+    /* Рамка основного цвета */
+    border-radius: 25px;
+    /* Скругленные края для "красоты" */
+    overflow: hidden;
+    /* Обрезает все, что выходит за рамки формы */
+    transition: border-color 0.3s;
+}
+
+/* Эффект при наведении/фокусе */
+.search-form:focus-within {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* --- 3. Стили для самого Input --- */
+.search-input {
+    border: none;
+    /* Убираем стандартную рамку, так как она есть у формы */
+    padding: 8px 15px;
+    font-size: 1em;
+    width: 250px;
+    /* Фиксированная или адаптивная ширина */
+    outline: none;
+    /* Убираем стандартный синий контур при фокусе */
+}
+
+/* Изменение цвета плейсхолдера */
+.search-input::placeholder {
+    color: #888;
+}
+
+/* --- 4. Стили для кнопки поиска --- */
+.search-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+    position:
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
