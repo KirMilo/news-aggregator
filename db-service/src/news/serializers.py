@@ -72,7 +72,7 @@ class NewsModelSerializer(NewsByPKModelSerializer):
         fields = (
             "id",
             "title",
-            "body",
+            # "body",
             "published_at",
             "categories",
         )

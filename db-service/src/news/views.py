@@ -99,6 +99,7 @@ class FreshNewsAPIView(generics.ListAPIView):
     def get(self, *args, **kwargs):
         return super().get(*args, **kwargs)
 
+
 class NewsByPKAPIView(generics.RetrieveAPIView):
     """Получить новость по id"""
     serializer_class = NewsByPKModelSerializer
@@ -108,7 +109,12 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
             News.objects
             .select_related("source")
             .prefetch_related("categories")
-            .values("id", "title", "body", "published_at")
+            .values(
+                "id",
+                "title",
+                # "body",
+                "published_at",
+            )
             .annotate(categories=ArrayAgg("source__categories__name"))
             .filter(pk=self.kwargs["pk"]))
         return queryset
@@ -149,6 +155,3 @@ class NewsSearchDocumentViewSet(BaseDocumentViewSet):
         )  # Добавляем фильтрацию по active
         queryset.model = self.document.Django.model
         return queryset
-
-
-
