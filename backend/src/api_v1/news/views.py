@@ -11,16 +11,16 @@ from api_v1.utils import WebSocketManager
 from core.http_session import get_http_session
 from rabbit.news import NewsMessagesQueue, get_news_messages_queue
 
+FRESH_NEWS_ENDPOINT = "/api/v1/news/"
+NEWS_BY_ID_ENDPOINT = "/api/v1/news/%d/"
+SEARCH_NEWS_ENDPOINT = "/api/v1/news/search/"
+NEWS_CATEGORIES_ENDPOINT = "/api/v1/news/categories/"
+
 router = APIRouter(
     tags=["News"],
     prefix="/news"
 )
 router.include_router(news_comments_router)
-
-FRESH_NEWS_ENDPOINT = "/api/v1/news/"
-NEWS_BY_ID_ENDPOINT = "/api/v1/news/%d/"
-SEARCH_NEWS_ENDPOINT = "/api/v1/news/search/"
-NEWS_CATEGORIES_ENDPOINT = "/api/v1/news/categories/"
 
 
 @router.get("/categories")

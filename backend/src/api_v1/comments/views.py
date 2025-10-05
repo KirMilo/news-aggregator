@@ -11,12 +11,12 @@ from api_v1.utils import WebSocketManager
 from core.http_session import get_http_session
 from rabbit.comments import NewsCommentsMessagesQueue, get_news_comments_messages_queue
 
+NEWS_COMMENTS_ENDPOINT = "/api/v1/news/{%d}/comments/"
+
 router = APIRouter(
     tags=["NewsComments"],
     prefix="/"
 )
-
-NEWS_COMMENTS_ENDPOINT = "/api/v1/news/{%d}/comments/"
 
 
 @router.get("/{news_id}/comments")
