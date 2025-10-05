@@ -112,7 +112,7 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
             .values(
                 "id",
                 "title",
-                # "body",
+                "body",
                 "published_at",
             )
             .annotate(categories=ArrayAgg("source__categories__name"))
