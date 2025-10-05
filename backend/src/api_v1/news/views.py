@@ -5,6 +5,7 @@ from aiohttp import ClientSession
 from fastapi import APIRouter, Depends, Path, Query
 from starlette.websockets import WebSocket
 
+from api_v1.comments.views import router as news_comments_router
 from api_v1.news.schemas.input import NewsParams
 from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel, NewsCategoriesOutputModel
 from api_v1.utils import WebSocketManager
@@ -15,6 +16,7 @@ router = APIRouter(
     tags=["News"],
     prefix="/news"
 )
+router.include_router(news_comments_router)
 
 FRESH_NEWS_ENDPOINT = "/api/v1/news/"
 NEWS_BY_ID_ENDPOINT = "/api/v1/news/%d/"
@@ -44,51 +46,14 @@ async def search_news(
 @router.get("", response_model=list[NewsOutputModel])
 async def get_news(
         params: NewsParams = Depends(NewsParams),
-        # session: ClientSession = Depends(get_http_session),
+        session: ClientSession = Depends(get_http_session),
 ) -> list[NewsOutputModel]:
-    # response = await session.get(
-    #     "/api/v1/news",
-    #     params=params.model_dump(exclude_none=True)
-    # )
-    # data = await response.json()
-    # return data["results"]
-    return [
-        {
-            "id": 1,
-            "title": "Новость1",
-            # "body": "News body",
-            "categories": ["Спорт", "Автоспорт"],
-            "published_at": datetime.now()
-        },
-        {
-            "id": 2,
-            "title": "Новость2",
-            # "body": "News body",
-            "categories": ["Экономика", "Политика"],
-            "published_at": datetime.now()
-        },
-        {
-            "id": 3,
-            "title": "Новость3",
-            # "body": "News body",
-            "categories": ["Спорт", "Киберспорт"],
-            "published_at": datetime.now()
-        },
-        {
-            "id": 4,
-            "title": "Новость4",
-            # "body": "News body",
-            "categories": ["Спорт", "Экономика"],
-            "published_at": datetime.now()
-        },
-        {
-            "id": 5,
-            "title": "Новость5",
-            # "body": "News body",
-            "categories": ["Техника", "Наука"],
-            "published_at": datetime.now()
-        },
-    ]
+    response = await session.get(
+        "/api/v1/news",
+        params=params.model_dump(exclude_none=True)
+    )
+    data = await response.json()
+    return data["results"]
 
 
 @router.get("/{news_id}")
