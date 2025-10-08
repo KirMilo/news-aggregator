@@ -3,13 +3,24 @@ from rest_framework import serializers
 
 from .models import News, NewsImage, Source, Category
 from .documents import NewsDocument
+from .utils.news_categories import fill_news_categories
+
+
+class NewsCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("id", "name", "slug")
+
+
+class NewsCategoriesMixin(serializers.Serializer):
+    categories = serializers.ListField(child=NewsCategoriesSerializer())
 
 
 class NewsDocumentSerializer(DocumentSerializer):
     class Meta:
         document = NewsDocument
         model = News
-        fields = ("id", "title", "body", "published_at")
+        fields = ("id", "title", "published_at", "categories")
         read_only = True
 
 
@@ -52,8 +63,7 @@ class CreateNewsSerializer(serializers.Serializer):
     data = serializers.ListField(child=CreateNewsFieldsSerializer())
 
 
-class NewsByPKModelSerializer(serializers.ModelSerializer):
-    categories = serializers.ListField(child=serializers.CharField())
+class NewsByPKModelSerializer(serializers.ModelSerializer, NewsCategoriesMixin):
     # news_image = NewsImagesModelSerializer()
 
     class Meta:
@@ -65,14 +75,16 @@ class NewsByPKModelSerializer(serializers.ModelSerializer):
             "categories",
         )
 
+    def to_representation(self, instance):
+        return fill_news_categories([instance])[0]
 
-class NewsModelSerializer(NewsByPKModelSerializer):
+
+class NewsModelSerializer(serializers.ModelSerializer, NewsCategoriesMixin):
     class Meta:
         model = News
         fields = (
             "id",
             "title",
-            # "body",
             "published_at",
             "categories",
         )

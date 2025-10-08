@@ -7,6 +7,7 @@ requires-python = ">=3.13,<4.0"
 dependencies = [
     "celery>=5.5.3",
     "django>=5.2.5",
+    "django-cache-memoize>=0.2.1",
     "django-elasticsearch-dsl==8.2",
     "django-elasticsearch-dsl-drf-alt==0.22.9",
     "django-extensions>=4.1",

@@ -24,6 +24,7 @@ from .serializers import (
     CategoriesModelSerializer,
 )
 from .news_signals.custom_signals import news_created_signal
+from .utils.news_categories import fill_news_categories
 
 
 class NewsSourcesAPIView(generics.ListAPIView):  # Тут ок
@@ -85,15 +86,17 @@ class FreshNewsAPIView(generics.ListAPIView):
             News.objects
             .select_related("source")
             .prefetch_related("categories")
-            .values("id", "title", "body", "published_at")
-            .annotate(categories=ArrayAgg("source__categories__name"))
+            .values("id", "title", "published_at")
+            .annotate(
+                categories=ArrayAgg("source__categories__slug"),
+            )
             .filter(active=True)
             .order_by("-published_at")
         )
         if category := self.request.query_params.get("category"):  # NOQA
             queryset = queryset.filter(categories__contains=[category])
 
-        return queryset
+        return fill_news_categories(queryset)
 
     @method_decorator(cache_page(60 * 3))
     def get(self, *args, **kwargs):
@@ -115,7 +118,7 @@ class NewsByPKAPIView(generics.RetrieveAPIView):
                 "body",
                 "published_at",
             )
-            .annotate(categories=ArrayAgg("source__categories__name"))
+            .annotate(categories=ArrayAgg("source__categories__slug"))
             .filter(pk=self.kwargs["pk"]))
         return queryset
 

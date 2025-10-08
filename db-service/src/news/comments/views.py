@@ -30,6 +30,6 @@ class CreateCommentByNewsPKAPIView(generics.CreateAPIView):
             return super().create(request, *args, **kwargs)
         except IntegrityError:
             return Response(
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status=status.HTTP_404_NOT_FOUND,
                 data={"detail": f"News id '{kwargs["news"]}' not found"},
             )
