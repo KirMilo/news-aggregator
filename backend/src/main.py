@@ -11,6 +11,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(v1_router, prefix="/api/v1")
 
 if __name__ == "__main__":

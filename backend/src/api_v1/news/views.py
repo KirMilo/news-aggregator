@@ -1,10 +1,9 @@
 from typing import Annotated
 
 from aiohttp import ClientSession
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, Path, Query, HTTPException
 from starlette.websockets import WebSocket
 
-from api_v1.comments.views import router as news_comments_router
 from api_v1.news.schemas.input import NewsParams
 from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel, NewsCategoriesOutputModel
 from api_v1.utils import WebSocketManager
@@ -13,14 +12,13 @@ from rabbit.news import NewsMessagesQueue, get_news_messages_queue
 
 FRESH_NEWS_ENDPOINT = "/api/v1/news/"
 NEWS_BY_ID_ENDPOINT = "/api/v1/news/%d/"
-SEARCH_NEWS_ENDPOINT = "/api/v1/news/search/"
+SEARCH_NEWS_ENDPOINT = "/api/v1/news/search"
 NEWS_CATEGORIES_ENDPOINT = "/api/v1/news/categories/"
 
 router = APIRouter(
     tags=["News"],
     prefix="/news"
 )
-router.include_router(news_comments_router)
 
 
 @router.get("/categories")
@@ -42,7 +40,7 @@ async def search_news(
     return data["results"]
 
 
-@router.get("", response_model=list[NewsOutputModel])
+@router.get("")
 async def get_news(
         params: NewsParams = Depends(NewsParams),
         session: ClientSession = Depends(get_http_session),
@@ -52,6 +50,7 @@ async def get_news(
         params=params.model_dump(exclude_none=True)
     )
     data = await response.json()
+    print(data)
     return data["results"]
 
 
@@ -61,6 +60,8 @@ async def get_news_by_id(
         session: ClientSession = Depends(get_http_session),
 ) -> NewsByIdOutputModel:
     response = await session.get(NEWS_BY_ID_ENDPOINT % news_id, )
+    if response.status == 404:
+        raise HTTPException(status_code=404, detail="Not found")
     data = await response.json()
     return data
 

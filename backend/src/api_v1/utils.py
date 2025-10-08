@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from starlette.websockets import WebSocket
+from fastapi.security import HTTPBearer
 
 
 @asynccontextmanager
@@ -9,3 +10,6 @@ async def WebSocketManager(websocket: WebSocket):  # NOQA
         yield
     finally:
         await websocket.close()
+
+
+http_bearer = HTTPBearer()

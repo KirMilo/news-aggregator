@@ -10,24 +10,25 @@ class NewsPublishedAtMixin(ABC):
         return dt.strftime("%H:%M | %d.%m.%Y ")
 
 
+class NewsCategory(BaseModel):
+    id: int
+    name: str
+    slug: str
+
+
+class NewsCategoriesOutputModel(NewsCategory):
+    children: list["NewsCategoriesOutputModel"]
+
+
 class NewsOutputModel(BaseModel, NewsPublishedAtMixin):
-    id: int  # TODO: Поправить в db_service
+    id: int
     title: str
-    # body: str
     published_at: datetime
-    categories: list[str]
+    categories: list[NewsCategory]
 
 
 class NewsByIdOutputModel(BaseModel, NewsPublishedAtMixin):
     title: str
     body: str
     published_at: datetime
-    categories: list[str]  # TODO: list CatogoryModel или на фронте поправить
-
-
-
-class NewsCategoriesOutputModel(BaseModel):
-    id: int
-    name: str
-    slug: str
-    children: list["NewsCategoriesOutputModel"]
+    categories: list[NewsCategory]
