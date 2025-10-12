@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django_extensions",
     'drf_spectacular',
     'rest_framework',
+    'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf_alt',
     'rest_framework_simplejwt',
@@ -175,6 +176,9 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',  # Разрешаем аутентификацию по сессии
         # 'rest_framework.authentication.BasicAuthentication',  # Тоже сессии (Эти две строчки по умолчанию)
     ),
+    # 'DEFAULT_FILTER_BACKENDS': (
+    #     'django_filters.rest_framework.DjangoFilterBackend',
+    # ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # Пагинация Для всего проекта
     'PAGE_SIZE': 10,  # Размер страницы при пагинации
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -184,7 +188,9 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'News-Aggregator DB Service API',
     'DESCRIPTION': 'News Aggregator DB Service',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_INCLUDE_SCHEMA': False,  # exclude schema from swagger-ui
+    'COMPONENT_SPLIT_REQUEST': True
+
 }
 
 AUTH_USER_MODEL = 'users.User'
@@ -195,7 +201,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
-
 
 # RABBITMQ
 RABBIT_SETTINGS = {

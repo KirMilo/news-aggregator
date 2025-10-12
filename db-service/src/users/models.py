@@ -23,7 +23,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         },
     )
     email = models.EmailField(_("email address"), blank=True)
-    avatar = models.URLField(verbose_name=_("avatar"), null=True, blank=True, default=None)
+    avatar = models.TextField(verbose_name=_("avatar"), max_length=200, null=True, blank=True, default=None)
     is_staff = models.BooleanField(
         verbose_name=_("staff status"),
         default=False,

@@ -3,17 +3,31 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView as DefaultTokenRefreshView
 
-from users.auth_users.serializers import RegistrationSerializer, UserLoginSerializer, UserLogoutSerializer
+from users.auth_users.serializers import (
+    RegistrationSerializer,
+    UserLoginSerializer,
+    UserLogoutSerializer,
+    SuccessLogoutSerializer,
+)
 
 
-# https://habr.com/ru/articles/793058/
 
-@extend_schema(request=RegistrationSerializer)
+@extend_schema(tags=['Авторизация'])
+class TokenRefreshView(DefaultTokenRefreshView):
+    pass
+
+
+@extend_schema(tags=['Авторизация'])
 class RegistrationAPIView(APIView):  # RegisterUser
+    serializer_class = RegistrationSerializer
+
+    @extend_schema(responses={201: TokenRefreshSerializer})
     def post(self, request):  # NOQA
-        serializer = RegistrationSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user = serializer.save()
@@ -34,35 +48,15 @@ class RegistrationAPIView(APIView):  # RegisterUser
         )
 
 
-# ConfirmRegisterUser
-
-@extend_schema(request=UserLoginSerializer)
+@extend_schema(tags=['Авторизация'])
 class LoginAPIView(APIView):
-    # LoginUser
+    serializer_class = UserLoginSerializer
+
+    @extend_schema(responses={200: TokenRefreshSerializer})
     def post(self, request):  # NOQA
-        data = request.data
-
-        username = data.get("username")
-        email = data.get("email")
-        password = data.get("password")
-
-        if (username or email) is None or password is None:
-            return Response(
-                {"error": "Provide username or email and password"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if username:
-            user = authenticate(
-                username=username,
-                password=password
-            )
-        else:
-            user = authenticate(
-                email=email,
-                password=password,
-            )
-
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(**serializer.validated_data)
         if user is None:
             return Response(
                 {"error": "Invalid credentials"},
@@ -70,7 +64,6 @@ class LoginAPIView(APIView):
             )
 
         refresh = RefreshToken.for_user(user)
-
         refresh.payload.update(
             {
                 "user_id": user.id,
@@ -86,21 +79,20 @@ class LoginAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
-@extend_schema(request=UserLogoutSerializer)
-class LogoutAPIView(APIView):  # LogoutUser
-    def post(self, request):  # NOQA
-        refresh_token = request.data.get('refresh_token')
-        if not refresh_token:
-            return Response(
-                {"error": "Provide refresh token"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
+@extend_schema(tags=['Авторизация'])
+class LogoutAPIView(APIView):  # LogoutUser
+    serializer_class = UserLogoutSerializer
+
+    @extend_schema(responses={200: SuccessLogoutSerializer})
+    def post(self, request) -> Response:  # NOQA
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh_token = serializer.validated_data['refresh_token']
         try:
             token = RefreshToken(refresh_token)
             token.blacklist()
-
-        except Exception as e:
+        except Exception:  # NOQA
             return Response(
                 {"error": "Invalid token"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -111,4 +103,4 @@ class LogoutAPIView(APIView):  # LogoutUser
             status=status.HTTP_200_OK,
         )
 
-# TODO: Сделать # UserPasswordChange
+# TODO: Сделать UserPasswordChange и ConfirmRegisterUser

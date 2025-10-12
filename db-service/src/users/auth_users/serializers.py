@@ -1,6 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 
@@ -41,8 +39,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(default=None)
     email = serializers.EmailField(default=None)
-    password = serializers.CharField()
+    password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        if data.get('username') or data.get('email') and data.get('password'):
+            return super().validate(data)
+        raise serializers.ValidationError({'detail': 'Please provide username or email and password.'})
 
 
 class UserLogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required=True)
+
+
+class SuccessLogoutSerializer(serializers.Serializer):
+    success = serializers.CharField(default="Logged out")

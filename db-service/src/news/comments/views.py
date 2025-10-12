@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from django.db.utils import IntegrityError
@@ -6,6 +7,7 @@ from .serializers import CommentResponseSerializer, CommentCreateModelSerializer
 from .models import Comment
 
 
+@extend_schema(tags=['Комментарии'])
 class UsersCommentsByNewsPKAPIView(generics.ListAPIView):
     """Получить комментарии к новости"""
     serializer_class = CommentResponseSerializer
@@ -20,6 +22,7 @@ class UsersCommentsByNewsPKAPIView(generics.ListAPIView):
         return queryset
 
 
+@extend_schema(tags=['Комментарии'])
 class CreateCommentByNewsPKAPIView(generics.CreateAPIView):
     """Добавить комментарий к новости"""
     serializer_class = CommentCreateModelSerializer
