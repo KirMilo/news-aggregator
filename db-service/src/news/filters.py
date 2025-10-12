@@ -40,26 +40,24 @@ class NewsFilterBase(django_filters.FilterSet):
 class NewsFilter(NewsFilterBase):
     serializer_class = NewsQuerySerializer
     offset = django_filters.DateTimeFilter(
-        label='Прямой сдвиг по дате (gt)',
-        field_name='published_at',
+        label='Прямой сдвиг по дате (lt)',
         method='set_offset',
     )
 
     def set_offset(self, queryset, name, value): # noqa
-        if offset := self.data.get(name):
-            queryset = queryset.filter(published_at__gt=offset)
+        if offset := self.data.get("offset"):
+            queryset = queryset.filter(published_at__lt=offset)
         return queryset
 
 
 class FreshNewsFilter(NewsFilterBase):
     serializer_class = FreshNewsQuerySerializer
     offset = django_filters.DateTimeFilter(
-        label='Обратный сдвиг по дате (lt)',
-        field_name='published_at',
+        label='Обратный сдвиг по дате (gt)',
         method='set_offset',
         required=True,
     )
 
     def set_offset(self, queryset, name, value): # noqa
-        offset = self.data.get(name) or datetime.now()
+        offset = self.data.get("offset") or datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         return queryset.filter(published_at__gt=offset)

@@ -85,6 +85,7 @@ class NewsCategoriesAPIView(generics.ListAPIView):
     """Получить список категорий новостей"""
     serializer_class = CategoriesModelSerializer
     queryset = Category.objects.all()
+    pagination_class = None
 
     def list(self, request, *args, **kwargs):
         cats = self.filter_queryset(self.get_queryset())
