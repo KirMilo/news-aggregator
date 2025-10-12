@@ -27,10 +27,14 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
+            "id",
+            "username",
             "avatar",
         )
+        extra_kwargs = {
+            "id": {"read_only": True},
+        }
 
 
 class IsAuthenticatedUserSerializer(serializers.Serializer):
     user = serializers.IntegerField()
-

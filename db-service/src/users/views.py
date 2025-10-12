@@ -28,10 +28,6 @@ class UserUpdateView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
-    def patch(self, request, *args, **kwargs):
-        super().patch(request, *args, **kwargs)
-        return Response(status=status.HTTP_200_OK)
-
 
 @extend_schema(tags=['Пользователь'])
 class IsAuthenticatedView(APIView):
