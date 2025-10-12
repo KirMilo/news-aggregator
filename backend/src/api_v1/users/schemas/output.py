@@ -12,6 +12,12 @@ class NewsPublishedAtMixin(ABC):
 
 class UserProfileModel(BaseModel):
     username: str
-    email: str | None = None
     avatar: str | None = None
     date_joined: datetime
+    is_owner: bool
+
+
+class UserProfilePartialOutputModel(BaseModel):
+    id: int
+    username: str
+    avatar: str | None

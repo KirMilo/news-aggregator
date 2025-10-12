@@ -7,7 +7,8 @@ from starlette.websockets import WebSocket
 
 from api_v1.comments.schemas.output import NewsCommentOutputModel
 from api_v1.comments.schemas.input import NewsCommentInputModel
-from api_v1.utils import WebSocketManager, http_bearer
+from api_v1.utils.auth import get_current_user
+from api_v1.utils.ws_manager import WebSocketManager
 from core.http_session import get_http_session
 from rabbit.comments import NewsCommentsMessagesQueue, get_news_comments_messages_queue
 
@@ -37,7 +38,7 @@ async def post_news_comment(
         comment: NewsCommentInputModel,
         request: Request,
         session: ClientSession = Depends(get_http_session),
-        credentials = Depends(http_bearer),  # noqa
+        user: int = Depends(get_current_user)  # noqa
 ):
     try:
         response = await session.post(

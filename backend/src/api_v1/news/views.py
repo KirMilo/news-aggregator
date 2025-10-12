@@ -4,9 +4,9 @@ from aiohttp import ClientSession
 from fastapi import APIRouter, Depends, Path, Query, HTTPException
 from starlette.websockets import WebSocket
 
-from api_v1.news.schemas.input import NewsParams
+from api_v1.news.schemas.input import NewsParams, FreshNewsParams
 from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel, NewsCategoriesOutputModel
-from api_v1.utils import WebSocketManager
+from api_v1.utils.ws_manager import WebSocketManager
 from core.http_session import get_http_session
 from rabbit.news import NewsMessagesQueue, get_news_messages_queue
 
@@ -26,8 +26,7 @@ async def get_news_categories(
         session: ClientSession = Depends(get_http_session),
 ) -> list[NewsCategoriesOutputModel]:
     response = await session.get(NEWS_CATEGORIES_ENDPOINT)
-    data = await response.json()
-    return data
+    return await response.json()
 
 
 @router.get("/search")
@@ -49,9 +48,19 @@ async def get_news(
         "/api/v1/news",
         params=params.model_dump(exclude_none=True)
     )
-    data = await response.json()
-    print(data)
-    return data["results"]
+    return await response.json()
+
+
+@router.get("/fresh")
+async def get_fresh_news(
+        params: NewsParams = Depends(FreshNewsParams),
+        session: ClientSession = Depends(get_http_session),
+) -> list[NewsOutputModel]:
+    response = await session.get(
+        "/api/v1/news/fresh",
+        params=params.model_dump(exclude_none=True)
+    )
+    return await response.json()
 
 
 @router.get("/{news_id}")
@@ -62,8 +71,7 @@ async def get_news_by_id(
     response = await session.get(NEWS_BY_ID_ENDPOINT % news_id, )
     if response.status == 404:
         raise HTTPException(status_code=404, detail="Not found")
-    data = await response.json()
-    return data
+    return await response.json()
 
 
 @router.websocket("/updates")

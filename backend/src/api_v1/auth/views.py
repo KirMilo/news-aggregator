@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 
 from api_v1.auth.schemas.input import LoginUserModel, RefreshInputModel, RegisterUserModel
 from api_v1.auth.schemas.output import RefreshOutputModel
@@ -8,7 +8,7 @@ from core.http_session import get_http_session
 LOGIN_ENDPOINT = "/api/v1/auth/login/"
 LOGOUT_ENDPOINT = "/api/v1/auth/logout/"
 REGISTER_ENDPOINT = "/api/v1/auth/register/"
-REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/refresh/"
+REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/token/refresh/"
 
 router = APIRouter(
     tags=["auth"],
@@ -48,10 +48,11 @@ async def register(
         REGISTER_ENDPOINT,
         json=form.model_dump()
     )
+    response.raise_for_status()
     return await response.json()
 
 
-@router.post("/refresh")
+@router.post("/token/refresh")
 async def refresh_token(
         form: RefreshInputModel,
         session: ClientSession = Depends(get_http_session),
@@ -60,4 +61,5 @@ async def refresh_token(
         REFRESH_TOKEN_ENDPOINT,
         json=form.model_dump()
     )
+    response.raise_for_status()
     return await response.json()
