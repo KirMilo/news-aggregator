@@ -15,7 +15,6 @@ from users.auth_users.serializers import (
 )
 
 
-
 @extend_schema(tags=['Авторизация'])
 class TokenRefreshView(DefaultTokenRefreshView):
     pass
