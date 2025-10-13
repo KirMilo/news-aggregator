@@ -14,6 +14,9 @@ from news.serializers import NewsModelSerializer, CategoriesModelSerializer
 from news.utils.news_categories import fill_news_categories
 
 
+NEWS_LIST_KEY_PREFIX = "GET_NEWS_LIST"
+
+
 @extend_schema(tags=['Новости'])
 class NewsAPIView(generics.ListAPIView):
     """Получить список новостей по категории или без категории"""
@@ -42,7 +45,7 @@ class NewsAPIView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @method_decorator(cache_page(60 * 3))
+    @method_decorator(cache_page(60 * 3, key_prefix=NEWS_LIST_KEY_PREFIX))
     def get(self, *args, **kwargs):
         return super().get(*args, **kwargs)
 
