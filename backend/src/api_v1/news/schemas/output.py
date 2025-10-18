@@ -20,11 +20,21 @@ class NewsCategoriesOutputModel(NewsCategory):
     children: list["NewsCategoriesOutputModel"]
 
 
-class NewsOutputModel(BaseModel, NewsPublishedAtMixin):
+class NewsOutputDataModel(BaseModel, NewsPublishedAtMixin):
     id: int
     title: str
     published_at: datetime
     categories: list[NewsCategory]
+
+
+class NewsOutputModel(BaseModel):
+    next: float | datetime
+    previous: float | datetime
+    data: list[NewsOutputDataModel]
+
+    @field_serializer(*("next", "previous"))
+    def serialize_dt(self, dt: datetime) -> float:
+        return dt.timestamp()
 
 
 class NewsByIdOutputModel(BaseModel, NewsPublishedAtMixin):

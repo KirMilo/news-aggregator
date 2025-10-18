@@ -13,25 +13,40 @@ class RabbitConnection:
     _connection: AbstractConnection | None = None
     _consumers_count: int = 0
 
-    async def get_connection(self) -> AbstractConnection:
-        if self._connection is None:
-            self._connection = await connect_robust(
+    @classmethod
+    def _inc_consumers(cls):  # noqa
+        cls._consumers_count += 1
+
+    @classmethod
+    def _dec_consumers(cls):
+        cls._consumers_count -= 1
+
+    @classmethod
+    async def _get_connection(cls) -> AbstractConnection:
+        if cls._connection is None:
+            cls._connection = await connect_robust(
                 host=RABBITMQ_HOST,
                 port=RABBITMQ_PORT,
                 user=RABBITMQ_USER,
                 password=RABBITMQ_PASSWORD,
             )
-        return self._connection
+        return cls._connection
+
+    @classmethod
+    async def _unset_connection(cls):
+        await cls._connection.close()
+        cls._connection = None
 
     async def __aenter__(self) -> AbstractConnection:
-        self._consumers_count += 1
-        return await self.get_connection()
+        if not self._consumers_count:
+            self._connection = await self._get_connection()
+        self._inc_consumers()
+        return self._connection
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._consumers_count -= 1
+        self._dec_consumers()
         if not self._consumers_count:
-            await self._connection.close()
-            self._connection = None
+            await self._unset_connection()
 
 
 async def get_rabbit_connection() -> AsyncGenerator[AbstractConnection, None]:

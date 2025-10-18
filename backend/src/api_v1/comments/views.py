@@ -3,12 +3,12 @@ from typing import Annotated
 from aiohttp import ClientSession
 from fastapi import APIRouter, Depends, Path, Request, HTTPException
 from starlette.responses import JSONResponse
-from starlette.websockets import WebSocket
+from starlette.websockets import WebSocket, WebSocketState
 
 from api_v1.comments.schemas.output import NewsCommentOutputModel
 from api_v1.comments.schemas.input import NewsCommentInputModel
 from api_v1.utils.auth import get_current_user
-from api_v1.utils.ws_manager import WebSocketManager
+from api_v1.utils.validate_response import validate_response
 from core.http_session import get_http_session
 from rabbit.comments import NewsCommentsMessagesQueue, get_news_comments_messages_queue
 
@@ -26,8 +26,7 @@ async def get_news_comments(
         session: ClientSession = Depends(get_http_session),
 ) -> list[NewsCommentOutputModel]:
     response = await session.get(NEWS_COMMENTS_ENDPOINT % news_id)
-    if response.status != 200:
-        raise HTTPException(status_code=404, detail="Post not found")
+    validate_response(response.status)
     data = await response.json()
     return data["results"]
 
@@ -59,7 +58,9 @@ async def news_updates(
         websocket: WebSocket,
         queue: NewsCommentsMessagesQueue = Depends(get_news_comments_messages_queue),
 ):
-    async with WebSocketManager(websocket):
-        queue.set_websocket(websocket)
-        while True:
-            await queue.send_update_on_receipt()
+    await websocket.accept()
+    queue.set_websocket(websocket)
+    await queue.send_update_on_receipt()
+
+    while websocket.client_state == WebSocketState.CONNECTED:
+        await websocket.receive()

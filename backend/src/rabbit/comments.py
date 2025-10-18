@@ -1,4 +1,5 @@
 import json
+from contextlib import asynccontextmanager
 from typing import Annotated, AsyncGenerator
 
 from aio_pika.abc import ExchangeType, AbstractQueue, AbstractIncomingMessage, AbstractConnection
@@ -21,7 +22,8 @@ class NewsCommentsMessagesQueue:
         self._queue: AbstractQueue | None = None
         self._websocket: WebSocket | None = None
 
-    async def build_queue(
+    @asynccontextmanager
+    async def channel(
             self,
     ):
         channel = await self._connection.channel()
@@ -33,6 +35,7 @@ class NewsCommentsMessagesQueue:
             type=ExchangeType.TOPIC,
         )
         queue = await channel.declare_queue(
+            auto_delete=True,
             exclusive=True,
         )
         await queue.bind(
@@ -40,6 +43,8 @@ class NewsCommentsMessagesQueue:
             routing_key=self._routing_key,
         )
         self._queue = queue
+        yield
+        await channel.close()
 
     async def on_message(self, message: AbstractIncomingMessage):
         async with message.process():
@@ -61,5 +66,5 @@ async def get_news_comments_messages_queue(
         connection: AbstractConnection = Depends(get_rabbit_connection),
 ) -> AsyncGenerator[NewsCommentsMessagesQueue, None]:
     queue = NewsCommentsMessagesQueue(connection, news_id)
-    await queue.build_queue()
-    yield queue
+    async with queue.channel():
+        yield queue

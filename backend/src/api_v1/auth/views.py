@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Response
 from api_v1.auth.schemas.input import LoginUserModel, RefreshInputModel, RegisterUserModel
 from api_v1.auth.schemas.output import RefreshOutputModel
 from core.http_session import get_http_session
+from api_v1.utils.auth import get_current_user
 
 LOGIN_ENDPOINT = "/api/v1/auth/login/"
 LOGOUT_ENDPOINT = "/api/v1/auth/logout/"
@@ -63,3 +64,10 @@ async def refresh_token(
     )
     response.raise_for_status()
     return await response.json()
+
+
+@router.get("/user/authenticated")
+async def is_authenticated(
+        user_id: int = Depends(get_current_user),  # noqa
+):
+    return {"user_id": user_id}

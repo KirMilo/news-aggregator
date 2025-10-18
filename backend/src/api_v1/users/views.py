@@ -17,12 +17,6 @@ UPLOAD_AVATAR_ENDPOINT = "/api/v1/user/"
 
 EXCLUDE_HEADERS = {"content-type", "content-length"}
 
-@router.get("/user/authenticated")
-async def is_authenticated(
-        user_id: int = Depends(get_current_user),  # noqa
-):
-    return {"user_id": user_id,}
-
 
 @router.put("/avatar")
 async def upload_avatar(
