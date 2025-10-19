@@ -126,16 +126,18 @@
 .news-item-category {
     display: inline-block;
     background-color: #f0f0f0;
-    padding: 4px 8px;
     border-radius: 6px;
-    font-size: 12px;
+    padding: 1px 1px;
     margin-right: 3px;
     margin-bottom: 4px;
 }
 
 .news-item-category a {
+    font-size: 12px;
+    padding: 4px 8px;
     text-decoration: none;
     color: #555;
+    border-radius: 4px;
 }
 
 .news-item-category:hover {

@@ -1,9 +1,6 @@
-/* --- Общие стили сайдбара --- */
 .left-sidebar {
     margin-top: 20px;
     width: 280px;
-    /*height: 100%;*/
-    /* Фиксированная ширина */
     padding: 20px;
     background-color: #f4f4f9;
     font-family: sans-serif;
@@ -22,7 +19,6 @@
     color: #1a1a1a;
 }
 
-/* --- Стили для списка категорий --- */
 .news-categories-list {
     position: relative;
     list-style: none;
@@ -31,12 +27,10 @@
     margin: 0;
 }
 
-/* --- Стили для отдельного элемента категории --- */
 .news-category-item {
     margin-bottom: 2px;
 }
 
-/* Контейнер для ссылки и кнопки раскрытия */
 .news-category-header {
     display: flex;
     justify-content: space-between;
@@ -44,22 +38,42 @@
     padding: 3px 0;
 }
 
-/* Ссылка на категорию */
+
 .news-category-link {
     /*display: flex;*/
+    text-decoration: none;
+    color: #333;
+    flex-grow: 5;
+    padding: 2px;
+    /* Чтобы ссылка занимала все доступное место */
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+}
+
+.news-category-link-active {
     text-decoration: none;
     color: #333;
     /*padding: 5px 10px;*/
     /*flex-grow: 5;*/
     /* Чтобы ссылка занимала все доступное место */
-    /*border-radius: 4px;*/
+    border-radius: 4px;
+    padding: 1px 3px;
+    width: 100%;
+    /*background-color: rgba(132, 10, 214, 0.37);*/
+    font-weight: bold;
     /*transition: background-color 0.2s, color 0.2s;*/
     cursor: pointer;
+    box-shadow: 0 0 12px #007bff;
 }
 
 .news-category-link:hover {
-    background-color: #e0e0e0;
+    /*background-color: #ccc;*/
     color: #000;
+    border-radius: 4px;
+    box-shadow: 0 0 12px #a802fb;
+    padding: 1px 3px;
+    /*font-weight: bold;*/
 }
 
 /* --- Стили для кнопки раскрытия --- */
@@ -104,6 +118,6 @@
  /*Отдельные стили для ссылок вложенных категорий */
 .sub-news-categories .news-category-link {
     /*font-size: 0.95em;*/
-    padding-left: 0;
+    padding: 2px 4px;
     /* Убираем дополнительный внутренний отступ */
 }

@@ -1,9 +1,8 @@
 const NewsPostCategories = ({ category }) => {
     return (
-        <div className="news-item-category">
+        <div className="news-item-category" onClick={(e) => e.stopPropagation()}>
             <a
                 href={`/category/${category.slug}`}
-                onClick={(e) => e.stopPropagation()}
                     >{category.name}</a>
         </div>
 

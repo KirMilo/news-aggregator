@@ -1,7 +1,22 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
-const CategoriesItem = ({ category }) => {
+
+function isActiveCategory(children, activeCat) {
+    let queue = [...children]
+    while (queue.length) {
+        let left = queue.shift()
+        if (left.slug === activeCat) {
+            return true;
+        }
+        queue = [...queue, ...left.children]
+    }
+    return false;
+}
+
+
+const CategoriesItem = ({category, activeCat}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isActive, setIsActive] = useState(false);
 
     const hasChildren = category.children.length > 0;
 
@@ -10,14 +25,24 @@ const CategoriesItem = ({ category }) => {
         setIsOpen(!isOpen);
     };
 
+    useEffect(() => {
+        if (isActiveCategory(category.children, activeCat)) {
+            setIsOpen(true);
+            setIsActive(true);
+        }
+    }, [])
+
     return (
         <li className="news-category-item">
             <div className="news-category-header">
-                <a href={`/category/${category.slug}`} className='news-category-link'>
+                <a
+                    href={`/category/${category.slug}`}
+                    className={activeCat === category.slug ? 'news-category-link-active' : 'news-category-link'}
+                >
                     {category.name}
                 </a>
                 {
-                    hasChildren && (
+                    hasChildren && !isActive && (
                         <button
                             type="button"
                             className={`toggle-button ${isOpen ? 'open' : ''}`}
@@ -31,14 +56,17 @@ const CategoriesItem = ({ category }) => {
                 }
             </div>
 
-            { /* Подсписок вынесен изнутри header — теперь он рендерится под родительским элементом */}
             {
                 hasChildren && isOpen && (
-                    <ul id={`subcats-${category.id}`} className="sub-news-categories">
+                    <ul className="sub-news-categories">
                         {
                             category.children.map(
                                 subCategory => (
-                                    <CategoriesItem key={subCategory.id} category={subCategory} />
+                                    <CategoriesItem
+                                        key={subCategory.id}
+                                        category={subCategory}
+                                        activeCat={activeCat}
+                                    />
                                 )
                             )
                         }

@@ -117,6 +117,7 @@ const LoadOldNews = ({setPosts, offset, setOffset, limit, category, setIsOldPost
 
 
 const NewsPage = () => {
+    const [categories, setCategories] = useState([]);
     const [posts, setPosts] = useState([]);
     const [aiReport, setAiReport] = useState(null);
 
@@ -149,9 +150,17 @@ const NewsPage = () => {
         }
     )
 
+    const [fetchCategories, isCategoriesLoading, fetchCategoriesError] = useFetching(
+        async () => {
+            const response = await NewsService.getNewsCategories();
+            setCategories(response.data);
+        }
+    )
+
     useEffect(() => {
         fetchPosts();
         fetchAiReport();
+        fetchCategories();
         newsUpdates(setFreshNewsCount, setPosts, categorySlug, setIsUpdating);
     }, []);
 
@@ -165,9 +174,12 @@ const NewsPage = () => {
     return (
         <div className="app">
             <div className="left-side-bar">
-                <LeftSideBar/>
+                <LeftSideBar categories={categories} activeCat={categorySlug}/>
             </div>
             <div className="main-content">
+                {fetchPostsError && console.log(fetchPostsError)}
+                {fetchAiReportError && console.log(fetchAiReportError)}
+                {fetchCategoriesError && console.log(fetchCategoriesError)}
                 <div className="posts-section">
                     {
                         fetchPostsError
@@ -204,7 +216,7 @@ const NewsPage = () => {
                     }
                 </div>
             </div>
-            {(isPostsLoading || isAiReportLoading) && <Loader/>}
+            {(isPostsLoading || isAiReportLoading || isCategoriesLoading) && <Loader/>}
         </div>
     )
 }
