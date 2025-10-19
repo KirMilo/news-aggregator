@@ -6,41 +6,63 @@ const NEWS_URL = BACKEND_URL + '/news';
 
 
 export default class NewsService {
-    static async getNewsList(category = '', limit = 10, page = 1) {
+    static async getNewsList(offset = null, limit = 10, category = null) {
         const params = {
             limit: limit,
-            page: page,
         }
-        if (category !== '') {
+        if (offset !== null) {
+            params.offset = offset
+        }
+        if (category !== null) {
             params.category = category
         }
+        return await axios.get(NEWS_URL, {params: params},);
+    }
 
-        const response = await axios.get(NEWS_URL, { params: params },)
-        return response;
+    static async getFreshNewsList(offset, limit = 10, category = null) {
+        const params = {
+            offset: offset,
+            limit: limit
+        }
+        if (category !== null) {
+            params.category = category
+        }
+        return await axios.get(NEWS_URL + '/fresh', {params: params},);
     }
 
     static async getNewsById(id) {
-        const response = await axios.get(NEWS_URL + '/' + id)
-        return response;
+        return await axios.get(NEWS_URL + '/' + id);
     }
 
-    static async getSearchNews(limit = 10, page = 1, search) {
-        const response = await axios.get(
+    static async getSearchNews(page = 1, limit = 10, search = '') {
+        return await axios.get(
             NEWS_URL + '/search',
             {
                 params: {
-                    limit: limit,
                     page: page,
+                    limit: limit,
                     search: search,
                 }
             }
-        )
-        return response;
+        );
     }
 
     static async getNewsCategories() {
-        const response = await axios.get(NEWS_URL + '/categories')
-        return response;
+        return await axios.get(NEWS_URL + '/categories');
+    }
+
+    static async getNewsComments(newsId) {
+        return await axios.get(NEWS_URL + `/${newsId}/comments`);
+    }
+
+    static async createNewsComment(newsId, comment) {
+        return await axios.post(
+            NEWS_URL + `/${newsId}/comment`,
+            {
+                withCredentials: true,
+                news_id: {newsId},
+                body: {comment},
+            }
+        );
     }
 }
-

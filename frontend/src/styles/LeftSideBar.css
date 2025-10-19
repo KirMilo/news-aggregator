@@ -2,13 +2,17 @@
 .left-sidebar {
     margin-top: 20px;
     width: 280px;
+    /*height: 100%;*/
     /* Фиксированная ширина */
-    padding: 15px;
+    padding: 20px;
     background-color: #f4f4f9;
-    border-right: 1px solid #ddd;
     font-family: sans-serif;
     color: #333;
-    position: absolute;
+    display: block;
+    position: fixed;
+    top: 55px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
 }
 
 .left-sidebar h2 {
@@ -37,18 +41,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
+    padding: 3px 0;
 }
 
 /* Ссылка на категорию */
 .news-category-link {
+    /*display: flex;*/
     text-decoration: none;
     color: #333;
-    padding: 5px 10px;
-    flex-grow: 1;
+    /*padding: 5px 10px;*/
+    /*flex-grow: 5;*/
     /* Чтобы ссылка занимала все доступное место */
-    border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
+    /*border-radius: 4px;*/
+    /*transition: background-color 0.2s, color 0.2s;*/
+    cursor: pointer;
 }
 
 .news-category-link:hover {
@@ -80,9 +86,9 @@
 }
 
 /* Стили для кнопки в раскрытом состоянии (можно использовать для анимации стрелки) */
-/* .toggle-button.open {
-  transform: rotate(45deg); 
-} */
+.toggle-button.open {
+  transform: rotate(180deg);
+}
 
 /* --- Стили для вложенных списков --- */
 .sub-news-categories {
@@ -90,13 +96,14 @@
     padding-left: 15px;
     /* Отступ для визуального выделения вложенности */
     margin: 0;
+    /* добавлен небольшой отступ сверху, чтобы список был под родителем */
     border-left: 1px solid #ccc;
     /* Вертикальная линия для выделения ветки */
 }
 
-/* Отдельные стили для ссылок вложенных категорий */
+ /*Отдельные стили для ссылок вложенных категорий */
 .sub-news-categories .news-category-link {
-    font-size: 0.95em;
+    /*font-size: 0.95em;*/
     padding-left: 0;
     /* Убираем дополнительный внутренний отступ */
 }

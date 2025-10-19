@@ -1,8 +1,10 @@
 const NewsPostCategories = ({ category }) => {
     return (
-        // Подобрать тег для category
         <div className="news-item-category">
-            {category}
+            <a
+                href={`/category/${category.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                    >{category.name}</a>
         </div>
 
     )

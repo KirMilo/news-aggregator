@@ -1,6 +1,6 @@
-const AiReportBlock = ({ report }) => {
+const AiReportBlock = ({report}) => {
     return (
-        <div className="post-card">
+        <div className="ai-post-card">
             <div className="ai-report-wrapper">
                 <strong className="ai-report-title">
                     Краткий отчет.

@@ -1,48 +1,37 @@
-import { useState, useEffect } from 'react'
 import './styles/App.css'
-import MainPage from './pages/MainPage'
-import axios from 'axios'
-import { BrowserRouter } from "react-router"
+import {useEffect, useState} from 'react';
+import {BrowserRouter} from "react-router";
+import AppRouter from './components/AppRouter';
+import {AuthContext} from './context';
+import Header from "./components/layout/Header/Header.jsx";
+import Footer from "./components/layout/Footer/Footer.jsx";
 
 function App() {
-  const [posts, setPosts] = useState([])
-  const [categories, setCategories] = useState([])
-  const [report, setReport] = useState(
-    "Тут краткий отчет..."
-  )
+    const [isAuth, setIsAuth] = useState(false);
+    const [isLoading, setLoading] = useState(true);
 
-  async function fetchFreshNews() {
-    const response = await axios.get('http://localhost:8001/api/v1/news')
-    // console.log(response.data)
-    setPosts(response.data)
-  }
+    useEffect(() => {
+        if (localStorage.getItem('auth')) {
+            setIsAuth(true)
+        }
+        setLoading(false);
+    }, [])
 
-  async function fetchNewsCategories() {
-    const response = await axios.get('http://localhost:8001/api/v1/news/categories')
-    setCategories(response.data)
-  }
-
-  useEffect(  // Первичная подгрузка страницы
-    () => {  // callback
-      console.log("Use Effect")
-      fetchNewsCategories()
-      fetchFreshNews()
-    },
-    [] // Массив зависимостей
-  )
-
-  return (
-    <div className="App">
-      <MainPage posts={posts} categories={categories} report={report} />
-    </div>
-  )
-
-  return (
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
-  )
-
+    return (
+        <AuthContext.Provider value={
+            {
+                isAuth,
+                setIsAuth,
+                isLoading
+            }
+        }>
+            <BrowserRouter>
+                <Header />
+                <AppRouter/>
+                <Footer />
+            </BrowserRouter>
+        </AuthContext.Provider>
+    )
 }
 
 export default App;

@@ -13,30 +13,38 @@ const CategoriesItem = ({ category }) => {
     return (
         <li className="news-category-item">
             <div className="news-category-header">
-                <a href={`/category/${category.slug}`} className={`news-category-link ${hasChildren ? 'has-children' : ''}`}>
+                <a href={`/category/${category.slug}`} className='news-category-link'>
                     {category.name}
                 </a>
                 {
                     hasChildren && (
-                        <button className={`toggle-button ${isOpen ? 'open' : ''}`} onClick={toggleOpen} aria-expanded={isOpen} aira-controls={`sublist-${category.id}`}>
+                        <button
+                            type="button"
+                            className={`toggle-button ${isOpen ? 'open' : ''}`}
+                            onClick={toggleOpen}
+                            aria-expanded={isOpen}
+                            aria-controls={`subcats-${category.id}`}
+                        >
                             {isOpen ? '-' : '+'}
                         </button>
                     )
                 }
-                {
-                    hasChildren && isOpen && (
-                        <ul id={`subcats-${category.id}`} className="sub-news-category">
-                            {
-                                category.children.map(
-                                    subCategory => (
-                                        < CategoriesItem key={subCategory.id} category={subCategory} />
-                                    )
-                                )
-                            }
-                        </ul>
-                    )
-                }
             </div>
+
+            { /* Подсписок вынесен изнутри header — теперь он рендерится под родительским элементом */}
+            {
+                hasChildren && isOpen && (
+                    <ul id={`subcats-${category.id}`} className="sub-news-categories">
+                        {
+                            category.children.map(
+                                subCategory => (
+                                    <CategoriesItem key={subCategory.id} category={subCategory} />
+                                )
+                            )
+                        }
+                    </ul>
+                )
+            }
         </li>
     )
 }

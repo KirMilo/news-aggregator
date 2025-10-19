@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import {useEffect, useRef} from 'react';
 
 
 export const useObserver = (ref, canLoad, isLoading, callback) => {
@@ -8,7 +8,7 @@ export const useObserver = (ref, canLoad, isLoading, callback) => {
         if (isLoading) return;
         if (observer.current) observer.current.disconnect();
 
-        var cb = function (entries, observer) {
+        const cb = function (entries, observer) {
             if (entries[0].isIntersecting && canLoad) {
                 callback()
             }

@@ -2,17 +2,11 @@ import NewsPostItem from './NewsPostItem';
 
 
 const NewsPostsList = ({ posts }) => {
-    if (!posts.length) {
-        return (
-            <h1>Новости не найдены!</h1>
-        )
-    }
-
     return (
-        <div>
+        <div className='news-posts-list'>
             {
                 posts.map(post =>
-                    <NewsPostItem post={post} key={post.id} />
+                    <NewsPostItem post={post} key={post.id}/>
                 )
             }
         </div>

@@ -1,23 +1,24 @@
-@import url("./header");
-@import url("./footer");
-@import url("./LeftSideBar");
-@import url("./PostsSection");
+@import url("./header.css");
+@import url("./footer.css");
+@import url("./LeftSideBar.css");
+@import url("./PostsSection.css");
+@import url('./Login.css');
 
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+    font-family: sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
 }
 
 #root {
-  max-width: 1500px;
-  margin: 0 auto;
-  text-align: left;
+    max-width: 1500px;
+    margin: 0 auto;
+    text-align: left;
 }
