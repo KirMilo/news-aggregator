@@ -28,7 +28,7 @@ def on_update_news(**kwargs):
     if kwargs["created"]:
         data = {kwargs["instance"].source.id: 1}
         publish_created_news.delay(data)
-    elif kwargs["instance"].is_published:
+    elif kwargs["instance"].active:
         publish_updated_news.delay(kwargs["instance"].id)
     else:
         publish_deleted_news.delay(kwargs["instance"].id)
