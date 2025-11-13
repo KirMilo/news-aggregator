@@ -11,7 +11,7 @@ export const publicRoutes = [
     { path: '/category/:categorySlug', element: NewsPage },
     { path: '/news/search', element: SearchPage },
     { path: '/news/:newsId', element: NewsItemPage },
-    { path: '/auth/registration', element: RegistrationPage},
+    { path: '/auth/register', element: RegistrationPage},
     { path: '/auth/login', element: LoginPage },
     { path: '/', element: NewsPage },
 ];

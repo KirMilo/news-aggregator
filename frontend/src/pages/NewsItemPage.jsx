@@ -13,12 +13,17 @@ import NewsPostCategories from '../components/posts/PostList/NewsPostCategories'
 
 function NewsItemContent({post}) {
     return (
-        <div className='post-content'>
-            <div className='post-meta'>
+        <div className='item-post-content'>
+            <div className='item-post-meta'>
                 <strong>Дата публикации: {post.published_at}</strong>
             </div>
-            <div className='post-title'>{post.title}</div>
-            <div className='post-article'>{post.body}</div>
+            <div className='item-post-title'>{post.title}</div>
+            <div className='item-post-article'>{
+                post.body.map(
+                    paragraph =>
+                        <p>{paragraph}</p>
+                )
+            }</div>
         </div>
     )
 }
@@ -38,11 +43,11 @@ function NewsCategories({categories}) {
 
 function NewsComment({user, comment}) {
     return (
-        <div className='news-comment'>
-            <div className='news-comment-user'>{user.username}</div>
-            <div className='news-comment-content'>
-                <div className='news-comment-body'>{comment.body}</div>
-                <div className='news-comment-date'>{comment.published_at}</div>
+        <div className='item-news-comment'>
+            <div className='item-news-comment-user'>{user.username}</div>
+            <div className='item-news-comment-content'>
+                <div className='item-news-comment-body'>{comment.body}</div>
+                <div className='item-news-comment-date'>{comment.published_at}</div>
             </div>
         </div>
     )
@@ -62,24 +67,24 @@ function CreateNewsComment({postComment}) {
 
     return (
         <form
-            className="news-comment-form"
+            className="item-news-comment-form"
             onSubmit={handleSubmit}
         >
             <input
-                className='news-comment-input'
+                className='item-news-comment-input'
                 type="text"
                 value={comment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Комментарий к новости..."
             />
-            <button type="submit" className='news-comment-button'>Отправить</button>
+            <button type="submit" className='item-news-comment-button'>Отправить</button>
         </form>
     )
 }
 
 function NewsComments({comments, postComment}) {
     return (
-        <div className="news-comments">
+        <div className="item-news-comments">
             <h2>Комментарии:</h2>
             <CreateNewsComment postComment={postComment}/>
             {comments.map(
@@ -132,7 +137,7 @@ function NewsItemPageContent() {
     }
 
     return (
-        <div className="news-item-content">
+        <div className="item-news-item-content">
             <NewsCategories categories={categories}/>
             <NewsItemContent post={post}/>
             <NewsComments comments={comments} postComment={postComment}/>
@@ -143,10 +148,8 @@ function NewsItemPageContent() {
 
 const NewsItemPage = () => {
     return (
-        <div className="app">
-            <div className="news-item-container" style={{marginTop: '150px', marginLeft: '150px'}}>
-                <NewsItemPageContent/>
-            </div>
+        <div className="item-news-item-container" style={{marginTop: '150px', marginLeft: '150px'}}>
+            <NewsItemPageContent/>
         </div>
     )
 }

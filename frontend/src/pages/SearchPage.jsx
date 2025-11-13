@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useSearchParams} from 'react-router-dom';
+import {useSearchParams} from 'react-router';
 
 import {useFetching} from '../hooks/useFetching';
 import NewsService from '../api/NewsService';
@@ -7,13 +7,13 @@ import Header from '../components/layout/Header/Header';
 import Footer from '../components/layout/Footer/Footer';
 
 
-const FoundItem = ({title, published_at}) => {
+const FoundItem = ({item}) => {
     return (
         <div className='post-card'>
             <div className='post__content'>
-                <strong className='post-title'>{title}</strong>
+                <strong className='post-title'>{item.title}</strong>
                 <div className='post-meta-container'>
-                    {published_at}
+                    {item.published_at}
                 </div>
             </div>
         </div>
@@ -21,10 +21,10 @@ const FoundItem = ({title, published_at}) => {
 }
 
 
-const FoundResults = (items) => {
-    if (!items.length) {
-        return <h1 style={{textAlign: 'center', marginTop: '50px'}}>Посты не найдены!</h1>
-    }
+const FoundResults = ({items}) => {
+    // if (!items.length) {
+    //     return <h1 style={{textAlign: 'center', marginTop: '50px'}}>Посты не найдены!</h1>
+    // }
 
     return (
         <div>
@@ -58,17 +58,13 @@ const SearchPage = () => {
     )
 
     useEffect(() => {
-        fetchResults(query, limit, page);
-    })
+        fetchResults(query, page, limit);
+    }, [])
 
 
     return (
-        <div className='app'>
-            <div className='search-page-container'>
-                <Header/>
-                <FoundResults items={results}/>
-                <Footer/>
-            </div>
+        <div className='search-page-container'>
+            <FoundResults items={results}/>
         </div>
     )
 }

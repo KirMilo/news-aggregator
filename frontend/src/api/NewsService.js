@@ -34,7 +34,7 @@ export default class NewsService {
         return await axios.get(NEWS_URL + '/' + id);
     }
 
-    static async getSearchNews(page = 1, limit = 10, search = '') {
+    static async getSearchNews(search = '', page = 1, limit = 10, ) {
         return await axios.get(
             NEWS_URL + '/search',
             {
