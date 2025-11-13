@@ -39,6 +39,6 @@ class NewsOutputModel(BaseModel):
 
 class NewsByIdOutputModel(BaseModel, NewsPublishedAtMixin):
     title: str
-    body: str
+    body: list[str]
     published_at: datetime
     categories: list[NewsCategory]

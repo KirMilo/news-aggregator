@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, Path, Query, HTTPException
 from starlette.websockets import WebSocket, WebSocketState
 
 from api_v1.news.schemas.input import NewsParams, FreshNewsParams
-from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel, NewsCategoriesOutputModel
+from api_v1.news.schemas.output import NewsOutputModel, NewsByIdOutputModel, NewsCategoriesOutputModel, \
+    NewsOutputDataModel
 from api_v1.utils.validate_response import validate_response
 from core.http_session import get_http_session
 from rabbit.news import NewsMessagesQueue, get_news_messages_queue
@@ -33,7 +34,7 @@ async def get_news_categories(
 async def search_news(
         search: Annotated[str, Query(title="Search query", min_length=3, max_length=120)],
         session: ClientSession = Depends(get_http_session),
-) -> list[NewsOutputModel]:
+) -> list[NewsOutputDataModel]:
     response = await session.get(SEARCH_NEWS_ENDPOINT, params={"search": search})
     validate_response(response.status)
     data = await response.json()
@@ -93,7 +94,10 @@ async def get_news_by_id(
 ) -> NewsByIdOutputModel:
     response = await session.get(NEWS_ENDPOINT + "%d/" % news_id, )
     validate_response(response.status)
-    return await response.json()
+    data = await response.json()
+    data["body"] = data["body"].split("\n\n")
+    data["body"] = [p for p in data["body"] if p]
+    return data
 
 
 @router.websocket("/updates")
